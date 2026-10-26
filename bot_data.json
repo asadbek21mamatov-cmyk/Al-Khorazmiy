@@ -1,0 +1,41 @@
+{
+  "verified_users": {
+    "6599495111": {
+      "phone": "+998",
+      "name": "Asadbek Mamatov",
+      "username": "@asadbek21mamatov",
+      "token": "creator",
+      "registered_at": "02.10.2026 16:10:00",
+      "role": "Super Admin"
+    },
+    "1395720435": {
+      "phone": "+998500701117",
+      "name": "Husniya_bintu_Ismatulloh",
+      "username": "@Husniya1117",
+      "token": "Havola_orqali",
+      "registered_at": "02.10.2026 16:12:59",
+      "role": "Administrator"
+    }
+  },
+  "used_tokens": [],
+  "pending_tokens": {
+    "join_8d3ecc08": {
+      "parent": "Sinov Ota",
+      "child": "Sinov Bola",
+      "phone": "+998 90 123 45 67",
+      "grade": "3",
+      "created_at": "14.10.2026 16:43"
+    },
+    "join_ec73fb29": {
+      "parent": "Abdulayev Alisher",
+      "child": "Abdulayev Jasur",
+      "phone": "+998 12 458 72 68",
+      "grade": "11",
+      "created_at": "2026-10-20 16:34"
+    }
+  },
+  "admins": [
+    "6599495111",
+    "1395720435"
+  ]
+}
