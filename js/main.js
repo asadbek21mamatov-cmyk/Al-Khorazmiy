@@ -4,32 +4,77 @@
  */
 
 /* ==========================================================
-       1. CINEMATIC LOGO INTRO SPLASH SCREEN (MAX 4.2s < 5s)
+       1. PRO HOLLYWOOD / NETFLIX 3D & LASER INTRO (4.4s < 5s)
        ========================================================== */
     (function initNetflixIntro() {
         const introOverlay = document.getElementById('netflixIntro');
+        const canvas = document.getElementById('introParticleCanvas');
         if (!introOverlay) return;
 
         let introClosed = false;
+        let animFrameId = null;
+
+        // 60fps Cinema Bokeh & Spark Particle Engine
+        if (canvas && canvas.getContext) {
+            const ctx = canvas.getContext('2d');
+            let cw = (canvas.width = window.innerWidth);
+            let ch = (canvas.height = window.innerHeight);
+
+            const particles = Array.from({ length: 46 }, (_, i) => {
+                const isGold = i % 3 === 0;
+                return {
+                    x: Math.random() * cw,
+                    y: Math.random() * ch,
+                    r: Math.random() * 2.2 + 0.6,
+                    vx: (Math.random() - 0.5) * 0.45,
+                    vy: -Math.random() * 0.7 - 0.15,
+                    alpha: Math.random() * 0.65 + 0.15,
+                    color: isGold ? '251, 191, 36' : '45, 212, 191'
+                };
+            });
+
+            function renderParticles() {
+                if (introClosed) return;
+                ctx.clearRect(0, 0, cw, ch);
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.y < -10) p.y = ch + 10;
+                    if (p.x < -10) p.x = cw + 10;
+                    if (p.x > cw + 10) p.x = -10;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = `rgba(${p.color}, 0.8)`;
+                    ctx.fill();
+                }
+                animFrameId = requestAnimationFrame(renderParticles);
+            }
+            renderParticles();
+        }
 
         function closeNetflixIntro() {
             if (introClosed) return;
             introClosed = true;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
             introOverlay.classList.add('hide');
             document.body.classList.remove('intro-playing');
 
             setTimeout(() => {
                 introOverlay.style.display = 'none';
-            }, 720);
+            }, 820);
         }
 
         // Lock page scroll while intro is active
         document.body.classList.add('intro-playing');
 
-        // Automatically transition out at 3.55s (total duration with 0.7s fade = ~4.25s, strictly <= 5s)
-        setTimeout(closeNetflixIntro, 3550);
+        // Transition out at 3.65s -> finishes completely at ~4.45s (strictly <= 5s)
+        setTimeout(closeNetflixIntro, 3650);
 
-        // Allow clicking anywhere on intro to close early if desired
+        // Allow clicking to close early if desired
         introOverlay.addEventListener('click', closeNetflixIntro);
     })();
 
