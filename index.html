@@ -31,6 +31,7 @@
     <meta name="twitter:image" content="school_building.webp">
 
     <!-- Preload LCP Hero Image -->
+    <link rel="preload" as="image" href="intro_emblem_hd.webp" fetchpriority="high">
     <link rel="preload" as="image" href="school_building.webp" fetchpriority="high">
     
     <!-- Google Fonts -->
@@ -78,7 +79,6 @@
 
 <!-- CINEMATIC LOGO INTRO SPLASH SCREEN (MAX 4.4s) -->
 <div id="netflixIntro" class="netflix-intro-overlay" aria-label="Al-Khorazmiy kirish animatsiyasi">
-    <canvas id="introParticleCanvas" class="intro-particle-canvas"></canvas>
     <div class="intro-god-rays"></div>
     <div class="intro-ambient-glow"></div>
 
@@ -117,7 +117,7 @@
             </svg>
 
             <!-- 2. 3D Sculpted Metallic Emerald Emblem -->
-            <img src="intro_emblem_3d.webp" alt="Al-Xorazmiy Emblem" class="intro-emblem-3d">
+            <img src="intro_emblem_hd.webp" fetchpriority="high" decoding="sync" alt="Al-Xorazmiy Emblem" class="intro-emblem-3d">
 
             <!-- 3. Specular Light Sweep Masked to Emblem -->
             <div class="intro-emblem-sheen"></div>
@@ -762,43 +762,43 @@
         
         <div class="reels-grid">
             <div class="reel-item">
-                <video src="video_1.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_1.mp4" poster="video_1_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_2.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_2.mp4" poster="video_2_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_3.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_3.mp4" poster="video_3_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_4.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_4.mp4" poster="video_4_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_5.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_5.mp4" poster="video_5_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_6.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_6.mp4" poster="video_6_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_7.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_7.mp4" poster="video_7_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_8.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_8.mp4" poster="video_8_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_9.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_9.mp4" poster="video_9_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
             <div class="reel-item">
-                <video src="video_10.mp4#t=0.1" preload="metadata" playsinline></video>
+                <video src="video_10.mp4" poster="video_10_poster.webp" preload="none" playsinline></video>
                 <div class="play-overlay" aria-hidden="true"><i class="fas fa-play"></i></div>
             </div>
         </div>
