@@ -104,7 +104,7 @@
         ::-webkit-scrollbar-thumb { background: var(--brand-green); border-radius: 99px; }
 
         /* ==========================================================
-           ULTRA-SHARP 4K & FAST LOGO INTRO (2.3s, ZERO BLUR)
+           3D RAY-LIT CINEMA STUDIO INTRO (3.0s WEBGL GPU)
            ========================================================== */
         body.intro-playing {
             overflow: hidden !important;
@@ -114,264 +114,46 @@
             inset: 0;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at 50% 45%, #072629 0%, #031114 58%, #010608 100%);
+            background: #020b0e;
             z-index: 9999999;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             opacity: 1;
-            transform: scale3d(1, 1, 1);
-            will-change: opacity, transform;
-            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                        transform 0.55s cubic-bezier(0.7, 0, 0.2, 1);
+            will-change: opacity;
+            transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .netflix-intro-overlay.hide {
             opacity: 0;
-            transform: scale3d(1.18, 1.18, 1);
             pointer-events: none;
         }
-        .intro-god-rays {
+        .intro-webgl-canvas {
             position: absolute;
-            width: 120vmax;
-            height: 120vmax;
-            background: radial-gradient(circle, rgba(20, 184, 166, 0.16) 0%, rgba(8, 147, 145, 0.05) 35%, transparent 65%);
-            pointer-events: none;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 2;
+        }
+        .intro-fallback-img {
+            position: relative;
             z-index: 1;
-        }
-        .intro-ambient-glow {
-            position: absolute;
-            width: min(560px, 85vw);
-            height: min(560px, 85vw);
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(45, 212, 191, 0.22) 0%, rgba(8, 147, 145, 0.06) 50%, transparent 70%);
-            animation: introAmbientPulse 3s ease-out forwards;
-            pointer-events: none;
-            z-index: 2;
-        }
-        @keyframes introAmbientPulse {
-            0% { opacity: 0; transform: scale(0.6); }
-            45% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0.9; transform: scale(1.08); }
-        }
-        .intro-cinema-stage {
-            position: relative;
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: min(500px, 86vw);
-            will-change: transform;
-            animation: introCameraPush 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-        @keyframes introCameraPush {
-            0% { transform: scale3d(0.92, 0.92, 1); }
-            100% { transform: scale3d(1.03, 1.03, 1); }
-        }
-        .intro-emblem-wrap {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1920 / 950;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* 1. Crisp Laser SVG Outline Drawing */
-        .intro-laser-svg {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-            z-index: 3;
-            animation: laserSvgFadeOut 0.45s 1.05s ease-out forwards;
-        }
-        .laser-path {
-            stroke: #5eead4;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: laserTrace 0.9s 0.02s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .laser-path-gold {
-            stroke: #fde047;
-            stroke-width: 3.2;
-            stroke-linecap: round;
-            stroke-dasharray: 150 1000;
-            stroke-dashoffset: 1000;
-            animation: laserSpark 0.9s 0.02s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes laserTrace {
-            0% { stroke-dashoffset: 1000; opacity: 0.5; }
-            100% { stroke-dashoffset: 0; opacity: 1; }
-        }
-        @keyframes laserSpark {
-            0% { stroke-dashoffset: 1000; opacity: 1; }
-            85% { opacity: 1; }
-            100% { stroke-dashoffset: -150; opacity: 0; }
-        }
-        @keyframes laserSvgFadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        /* 2. 4K Lossless Razor-Sharp Emblem (ZERO blur!) */
-        .intro-emblem-3d {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+            width: min(560px, 86vw);
+            height: auto;
             object-fit: contain;
-            z-index: 2;
-            opacity: 0;
-            image-rendering: -webkit-optimize-contrast;
-            filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.65));
-            animation: emblem3dReveal 0.75s 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes emblem3dReveal {
-            0% {
-                opacity: 0;
-                transform: scale3d(0.96, 0.96, 1);
-            }
-            100% {
-                opacity: 1;
-                transform: scale3d(1, 1, 1);
-            }
-        }
-        /* 3. Masked Metallic Specular Sheen Sweep */
-        .intro-emblem-sheen {
-            position: absolute;
-            inset: 0;
-            z-index: 4;
-            pointer-events: none;
-            -webkit-mask-image: url('../intro_emblem_hd.webp');
-            mask-image: url('../intro_emblem_hd.webp');
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            mask-position: center;
-            background: linear-gradient(
-                112deg,
-                transparent 36%,
-                rgba(255, 255, 255, 0.2) 44%,
-                rgba(254, 240, 138, 0.9) 50%,
-                rgba(255, 255, 255, 0.2) 56%,
-                transparent 64%
-            );
-            background-size: 240% 100%;
-            background-position: 160% 0;
-            animation: emblemSheenSweep 0.95s 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes emblemSheenSweep {
-            0% { background-position: 160% 0; }
-            100% { background-position: -60% 0; }
-        }
-        /* 4. Anamorphic Horizontal Cinema Lens Flare */
-        .intro-lens-flare {
-            position: absolute;
-            top: 56%;
-            left: 50%;
-            width: 120%;
-            height: 2.5px;
-            transform: translate(-50%, -50%) scaleX(0);
-            background: linear-gradient(90deg, transparent 0%, rgba(45, 212, 191, 0.85) 25%, #ffffff 50%, rgba(251, 191, 36, 0.85) 75%, transparent 100%);
-            box-shadow: 0 0 18px 3px rgba(45, 212, 191, 0.7);
-            border-radius: 50%;
-            z-index: 6;
             opacity: 0;
             pointer-events: none;
-            animation: anamorphicFlare 0.9s 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform: scale(0.92);
+            transition: opacity 0.6s ease, transform 2.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        @keyframes anamorphicFlare {
-            0% { opacity: 0; transform: translate(-50%, -50%) scaleX(0.05); }
-            40% { opacity: 1; transform: translate(-50%, -50%) scaleX(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scaleX(1.25); }
+        .netflix-intro-overlay.no-webgl {
+            background: radial-gradient(circle at 50% 48%, #072226 0%, #030f12 65%, #010608 100%);
         }
-        /* 5. Razor-Sharp Vector Typography (ZERO blur!) */
-        .intro-typo-wrap {
-            margin-top: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+        .netflix-intro-overlay.no-webgl .intro-fallback-img {
+            opacity: 1;
+            transform: scale(1.04);
         }
-        .intro-main-name {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: clamp(28px, 4.5vw, 46px);
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 4px 16px rgba(0, 0, 0, 0.75);
-            opacity: 0;
-            letter-spacing: 0.28em;
-            transform: translate3d(0, 12px, 0);
-            animation: cinemaTitleIn 0.75s 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes cinemaTitleIn {
-            0% {
-                opacity: 0;
-                letter-spacing: 0.32em;
-                transform: translate3d(0, 12px, 0);
-            }
-            100% {
-                opacity: 1;
-                letter-spacing: 0.14em;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-        .intro-sub-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 8px;
-            opacity: 0;
-            animation: cinemaSubIn 0.65s 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes cinemaSubIn {
-            0% { opacity: 0; transform: translate3d(0, 8px, 0); }
-            100% { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-        .intro-sub-word {
-            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-            font-size: clamp(13.5px, 2vw, 18.5px);
-            font-weight: 700;
-            color: #2dd4bf;
-            letter-spacing: 0.48em;
-            padding-left: 0.48em;
-        }
-        .intro-sub-line {
-            height: 2px;
-            width: 0;
-            background: linear-gradient(90deg, transparent, #2dd4bf);
-            animation: cinemaLineExpand 0.7s 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .intro-sub-line.right {
-            background: linear-gradient(90deg, #2dd4bf, transparent);
-        }
-        @keyframes cinemaLineExpand {
-            0% { width: 0; }
-            100% { width: clamp(45px, 9vw, 85px); }
-        }
-        .intro-motto-row {
-            margin-top: 12px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: clamp(10.5px, 1.4vw, 13px);
-            font-weight: 700;
-            letter-spacing: 0.32em;
-            color: #fbbf24;
-            opacity: 0;
-            animation: cinemaSubIn 0.65s 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-
-
-
-
-
 
         /* Typography & Section Headers */
         .section-tag {

@@ -790,8 +790,13 @@ if __name__ == "__main__":
     web_thread = threading.Thread(target=run_web_server, daemon=True)
     web_thread.start()
 
-    # Telegram bot polling
-    bot.infinity_polling(
-        skip_pending=True,
-        allowed_updates=["message", "chat_member", "my_chat_member", "channel_post", "edited_channel_post", "callback_query"]
-    )
+    # Telegram bot polling (xatolik yoki 409 bo'lsa ham Web API to'xtab qolmaydi)
+    while True:
+        try:
+            bot.infinity_polling(
+                skip_pending=True,
+                allowed_updates=["message", "chat_member", "my_chat_member", "channel_post", "edited_channel_post", "callback_query"]
+            )
+        except Exception as e:
+            logger.warning(f"Telegram polling vaqtinchalik uzildi (5s dan so'ng qayta ulanadi): {e}")
+            time.sleep(5)
