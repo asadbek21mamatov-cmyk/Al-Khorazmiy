@@ -1100,6 +1100,108 @@
         .author-info span { font-size: 12.5px; color: rgba(255, 255, 255, 0.5); }
 
         /* ==========================================================
+           NEWS & ANNOUNCEMENTS SECTION (DYNAMIC SUPABASE CMS)
+           ========================================================== */
+        #news { background: var(--bg-body); }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .news-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+        .news-img {
+            height: 215px;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-surface-alt);
+        }
+        .news-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s ease;
+        }
+        .news-card:hover .news-img img {
+            transform: scale(1.06);
+        }
+        .news-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: linear-gradient(135deg, var(--brand-green), var(--brand-green-dark));
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: var(--radius-full);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .news-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .news-date {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .news-date i { color: var(--brand-green); }
+        .news-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18.5px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.35;
+            margin-bottom: 10px;
+        }
+        .news-summary {
+            font-size: 13.8px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 18px;
+            flex: 1;
+        }
+        .news-footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--brand-green);
+            transition: gap 0.2s ease;
+            margin-top: auto;
+        }
+        .news-footer-link:hover { gap: 11px; }
+        @media (max-width: 1100px) {
+            .news-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 650px) {
+            .news-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ==========================================================
            ADMISSION SECTION
            ========================================================== */
         #admission { background: var(--bg-surface); position: relative; }
@@ -1303,3 +1405,23 @@
             }
         }
 
+        /* ==========================================================
+           HIDE EXTERNAL HOSTING BADGE ("Powered by Netlify")
+           ========================================================== */
+        a[href*="netlify.com"],
+        iframe[src*="netlify"],
+        div[id*="netlify"],
+        div[class*="netlify"],
+        aside[id*="netlify"],
+        aside[class*="netlify"],
+        netlify-badge,
+        [data-netlify-badge],
+        [data-netlify-deploy-id] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }

@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Panel | Al-Khorazmiy International School</title>
+    <link rel="icon" type="image/webp" href="logo.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Pinned Supabase JS Client v2.49.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-sidebar: #070d19;
+            --bg-sidebar-hover: rgba(255, 255, 255, 0.07);
+            --brand-teal: #089391;
+            --brand-teal-dark: #007371;
+            --brand-teal-light: rgba(8, 147, 145, 0.12);
+            --brand-gold: #f59e0b;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --info: #3b82f6;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.09);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ================= LOGIN SCREEN ================= */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(circle at 20% 20%, rgba(8, 147, 145, 0.25), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.15), transparent 50%),
+                        #060b16;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 430px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 34px;
+            color: #ffffff;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(16px);
+        }
+        .auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+        .auth-brand img {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            object-fit: contain;
+            background: #ffffff;
+            padding: 4px;
+        }
+        .auth-brand h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .auth-brand span {
+            display: block;
+            font-size: 12px;
+            color: #5eead4;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .auth-sub {
+            font-size: 13.5px;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 24px;
+        }
+        .auth-field { margin-bottom: 16px; }
+        .auth-field label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 6px;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .auth-input:focus { border-color: #14b8a6; }
+        .auth-error {
+            display: none;
+            background: rgba(239, 68, 68, 0.16);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            font-size: 13px;
+            padding: 10px 13px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #089391, #0d9488);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(8, 147, 145, 0.4);
+        }
+        .auth-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 13px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .auth-back:hover { color: #5eead4; }
+
+        /* ================= DASHBOARD LAYOUT ================= */
+        .app-shell {
+            display: none;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 265px;
+            background: var(--bg-sidebar);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 22px 16px;
+            transition: transform 0.3s ease;
+        }
+        .sb-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 10px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 18px;
+        }
+        .sb-logo img {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: #fff;
+            padding: 3px;
+            object-fit: contain;
+        }
+        .sb-logo strong {
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            display: block;
+        }
+        .sb-logo span {
+            font-size: 11px;
+            color: #5eead4;
+            font-weight: 600;
+        }
+        .sb-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .sb-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.68);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .sb-btn i { width: 18px; text-align: center; font-size: 15px; }
+        .sb-btn:hover { background: var(--bg-sidebar-hover); color: #ffffff; }
+        .sb-btn.active {
+            background: linear-gradient(135deg, var(--brand-teal), var(--brand-teal-dark));
+            color: #ffffff;
+            box-shadow: 0 6px 18px rgba(8, 147, 145, 0.35);
+        }
+        .sb-badge {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+        .sb-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .sb-link:hover { background: var(--bg-sidebar-hover); color: #fff; }
+        .sb-logout {
+            background: rgba(239, 68, 68, 0.14);
+            color: #fca5a5;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+            text-align: left;
+        }
+        .sb-logout:hover { background: var(--danger); color: #ffffff; }
+
+        /* MAIN CONTENT */
+        .main-area {
+            margin-left: 265px;
+            padding: 28px 32px 60px;
+            width: calc(100% - 265px);
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .mob-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .page-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .user-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+        .user-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 22px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kpi-label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+        .kpi-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* PANELS & FORMS */
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .card-title i { color: var(--brand-teal); }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .input, .select, .textarea {
+            padding: 10px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13.5px;
+            color: var(--text-main);
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input:focus, .select:focus, .textarea:focus { border-color: var(--brand-teal); }
+        .textarea { width: 100%; min-height: 82px; resize: vertical; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-teal), var(--brand-teal-dark));
+            color: #ffffff;
+        }
+        .btn-primary:hover { opacity: 0.94; transform: translateY(-1px); }
+        .btn-outline {
+            background: #ffffff;
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+        }
+        .btn-outline:hover { border-color: var(--brand-teal); color: var(--brand-teal); }
+        .btn-excel {
+            background: #16a34a;
+            color: #ffffff;
+        }
+        .btn-excel:hover { background: #15803d; }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+        }
+        .btn-danger:hover { background: var(--danger); color: #ffffff; }
+        .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        th {
+            text-align: left;
+            padding: 12px 14px;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        td {
+            padding: 13px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        tr:hover td { background: #fafcff; }
+
+        .status-select {
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12.5px;
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+        }
+        .status-new { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+        .status-contacted { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+        .status-enrolled { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+        .status-rejected { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+
+        .note-inline {
+            display: flex;
+            gap: 6px;
+            min-width: 200px;
+        }
+        .note-inline input {
+            flex: 1;
+            padding: 6px 9px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-size: 12.5px;
+            font-family: inherit;
+        }
+
+        /* CMS FORM GRID & MEDIA CARDS */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+        .field .input, .field .select { width: 100%; }
+
+        .cms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+        }
+        .cms-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s;
+        }
+        .cms-card:hover { box-shadow: var(--shadow-md); }
+        .cms-thumb {
+            height: 170px;
+            background: #0f172a;
+            position: relative;
+            overflow: hidden;
+        }
+        .cms-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cms-pill {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(7, 13, 25, 0.8);
+            color: #5eead4;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+        }
+        .cms-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 99px;
+        }
+        .cms-status.pub { background: #dcfce7; color: #15803d; }
+        .cms-status.hid { background: #fee2e2; color: #b91c1c; }
+        .cms-body {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cms-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+        .cms-sub {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+        .cms-actions {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(16px);
+            pointer-events: none;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 1024px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-area { margin-left: 0; width: 100%; padding: 20px 16px 50px; }
+            .mob-toggle { display: inline-flex; align-items: center; justify-content: center; }
+        }
+        @media (max-width: 560px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ==========================================================
+           HIDE EXTERNAL HOSTING BADGE ("Powered by Netlify")
+           ========================================================== */
+        a[href*="netlify.com"],
+        iframe[src*="netlify"],
+        div[id*="netlify"],
+        div[class*="netlify"],
+        aside[id*="netlify"],
+        aside[class*="netlify"],
+        netlify-badge,
+        [data-netlify-badge],
+        [data-netlify-deploy-id] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+    <!-- Auto-hide Edge-injected "Powered by Netlify" badge -->
+    <script>
+    (function () {
+        var ALLOWED_IDS = {
+            netflixIntro: 1, header: 1, mobileOverlay: 1, mobileMenu: 1,
+            lightboxModal: 1, successModal: 1, backToTop: 1,
+            authScreen: 1, appShell: 1, toast: 1
+        };
+        var ALLOWED_TAGS = { MAIN: 1, FOOTER: 1, HEADER: 1, SCRIPT: 1, STYLE: 1, LINK: 1, NOSCRIPT: 1 };
+
+        function hideEl(el) {
+            if (!el || !el.style) return;
+            el.style.setProperty('display', 'none', 'important');
+            el.style.setProperty('visibility', 'hidden', 'important');
+            el.style.setProperty('opacity', '0', 'important');
+            el.style.setProperty('pointer-events', 'none', 'important');
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }
+
+        function isBadge(el) {
+            if (!el || el.nodeType !== 1) return false;
+            if (el.id && ALLOWED_IDS[el.id]) return false;
+            var sig = ((el.id || '') + ' ' + (typeof el.className === 'string' ? el.className : '') + ' ' + el.tagName).toLowerCase();
+            if (sig.indexOf('netlify') !== -1) return true;
+            var link = (el.getAttribute && (el.getAttribute('href') || el.getAttribute('src') || '')) || '';
+            if (link.toLowerCase().indexOf('netlify.com') !== -1) return true;
+
+            if (el.parentElement === document.body && !ALLOWED_TAGS[el.tagName] && !ALLOWED_IDS[el.id]) {
+                var txt = (el.textContent || '').toLowerCase();
+                if (txt.indexOf('powered by netlify') !== -1) return true;
+                if (el.tagName === 'IFRAME') return true;
+                var cs = window.getComputedStyle ? window.getComputedStyle(el) : null;
+                if (cs && cs.position === 'fixed' && (el.__hasShadow || el.shadowRoot || el.querySelector('iframe'))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (window.Element && Element.prototype.attachShadow) {
+            var origAttach = Element.prototype.attachShadow;
+            Element.prototype.attachShadow = function (init) {
+                var host = this;
+                host.__hasShadow = true;
+                var sr = origAttach.call(host, init);
+                setTimeout(function () {
+                    var inner = (sr && sr.innerHTML ? sr.innerHTML : '').toLowerCase();
+                    if (inner.indexOf('netlify') !== -1 || isBadge(host)) hideEl(host);
+                }, 0);
+                return sr;
+            };
+        }
+
+        function sweep() {
+            if (!document.body) return;
+            var kids = Array.prototype.slice.call(document.body.children);
+            for (var i = 0; i < kids.length; i++) {
+                if (isBadge(kids[i])) hideEl(kids[i]);
+            }
+            var matches = document.querySelectorAll('a[href*="netlify.com"], iframe[src*="netlify"], [id*="netlify"], [class*="netlify"]');
+            for (var j = 0; j < matches.length; j++) hideEl(matches[j]);
+        }
+
+        if (window.MutationObserver) {
+            var mo = new MutationObserver(function (mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    var added = mutations[i].addedNodes;
+                    for (var j = 0; j < added.length; j++) {
+                        var n = added[j];
+                        if (n && n.nodeType === 1) {
+                            if (isBadge(n)) hideEl(n);
+                            else (function (node) { setTimeout(function () { if (isBadge(node)) hideEl(node); }, 25); })(n);
+                        }
+                    }
+                }
+            });
+            mo.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        window.addEventListener('DOMContentLoaded', sweep);
+        window.addEventListener('load', function () { sweep(); setTimeout(sweep, 500); });
+    })();
+    </script>
+</head>
+<body>
+
+<!-- ================= 1. LOGIN SCREEN ================= -->
+<div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <img src="logo.webp" alt="Al-Khorazmiy Logo">
+            <div>
+                <h1>Al-Khorazmiy Admin</h1>
+                <span>Supabase Cloud Boshqaruv Tizimi</span>
+            </div>
+        </div>
+        <p class="auth-sub">Qabul arizalari, sertifikatlar, galereya va yangiliklarni xavfsiz boshqarish uchun tizimga kiring.</p>
+        <div class="auth-error" id="authError"></div>
+        <form id="loginForm">
+            <div class="auth-field">
+                <label for="loginEmail">Admin Email</label>
+                <input type="email" id="loginEmail" class="auth-input" placeholder="admin@alkhorazmiyschool.uz" required autocomplete="username">
+            </div>
+            <div class="auth-field">
+                <label for="loginPassword">Parol</label>
+                <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••••••" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="auth-btn" id="loginBtn">
+                <i class="fas fa-shield-halved"></i> Tizimga kirish
+            </button>
+        </form>
+        <a href="index.html" class="auth-back"><i class="fas fa-arrow-left"></i> Asosiy saytga qaytish</a>
+    </div>
+</div>
+
+<!-- ================= 2. ADMIN DASHBOARD ================= -->
+<div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar">
+        <div class="sb-logo">
+            <img src="logo.webp" alt="Logo">
+            <div>
+                <strong>Al-Khorazmiy</strong>
+                <span>Cloud Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="sb-nav">
+            <button class="sb-btn active" data-tab="applications">
+                <i class="fas fa-inbox"></i> Qabul Arizalari
+                <span class="sb-badge" id="navAppsCount">0</span>
+            </button>
+            <button class="sb-btn" data-tab="certificates">
+                <i class="fas fa-award"></i> Sertifikatlar
+                <span class="sb-badge" id="navCertsCount">0</span>
+            </button>
+            <button class="sb-btn" data-tab="gallery">
+                <i class="fas fa-images"></i> Kampus Galereyasi
+                <span class="sb-badge" id="navGalCount">0</span>
+            </button>
+            <button class="sb-btn" data-tab="news">
+                <i class="fas fa-newspaper"></i> Yangiliklar
+                <span class="sb-badge" id="navNewsCount">0</span>
+            </button>
+            <button class="sb-btn" data-tab="settings">
+                <i class="fas fa-robot"></i> Bot Adminlari &amp; Parol
+            </button>
+        </nav>
+
+        <div class="sb-footer">
+            <a href="index.html" target="_blank" class="sb-link"><i class="fas fa-external-link-alt"></i> Saytni ochish</a>
+            <button class="sb-link sb-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Tizimdan chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-area">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="mob-toggle" id="mobMenuBtn" aria-label="Menyu"><i class="fas fa-bars"></i></button>
+                <h2 class="page-title" id="pageTitle">Qabul Arizalari</h2>
+            </div>
+            <div class="user-pill">
+                <span class="dot"></span>
+                <span id="adminEmailLabel">admin@alkhorazmiyschool.uz</span>
+            </div>
+        </div>
+
+        <!-- TAB 1: APPLICATIONS -->
+        <section class="tab-pane active" id="tab-applications">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">Jami Arizalar</div>
+                        <div class="kpi-val" id="kpiTotal">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:rgba(8,147,145,0.12);color:#089391;"><i class="fas fa-folder-open"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">Yangi Arizalar</div>
+                        <div class="kpi-val" id="kpiNew" style="color:#1d4ed8;">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff;color:#1d4ed8;"><i class="fas fa-bell"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">Bog'lanildi</div>
+                        <div class="kpi-val" id="kpiContacted" style="color:#b45309;">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#fef3c7;color:#b45309;"><i class="fas fa-phone-volume"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">Qabul Qilindi</div>
+                        <div class="kpi-val" id="kpiEnrolled" style="color:#15803d;">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#dcfce7;color:#15803d;"><i class="fas fa-user-check"></i></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-list-check"></i> Kelib tushgan arizalar ro'yxati</div>
+                    <div class="toolbar">
+                        <input type="search" id="appSearch" class="input" placeholder="Ism yoki telefon qidirish...">
+                        <select id="appGradeFilter" class="select">
+                            <option value="all">Barcha sinflar</option>
+                            <option value="1">1-sinf</option>
+                            <option value="2">2-sinf</option>
+                            <option value="3">3-sinf</option>
+                            <option value="4">4-sinf</option>
+                            <option value="5">5-sinf</option>
+                            <option value="6">6-sinf</option>
+                            <option value="7">7-sinf</option>
+                            <option value="8">8-sinf</option>
+                            <option value="9">9-sinf</option>
+                            <option value="10">10-sinf</option>
+                            <option value="11">11-sinf</option>
+                        </select>
+                        <select id="appStatusFilter" class="select">
+                            <option value="all">Barcha holatlar</option>
+                            <option value="new">🆕 Yangi</option>
+                            <option value="contacted">📞 Bog'lanildi</option>
+                            <option value="enrolled">✅ Qabul qilindi</option>
+                            <option value="rejected">❌ Rad etildi</option>
+                        </select>
+                        <button class="btn btn-outline" id="refreshAppsBtn"><i class="fas fa-rotate"></i> Yangilash</button>
+                        <button class="btn btn-excel" id="exportCsvBtn"><i class="fas fa-file-excel"></i> Excel (CSV)</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Sana</th>
+                                <th>Ota-ona F.I.Sh</th>
+                                <th>Farzand F.I.Sh</th>
+                                <th>Telefon</th>
+                                <th>Sinf</th>
+                                <th>Holat</th>
+                                <th>Admin izohi</th>
+                                <th>Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appsTableBody">
+                            <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">Yuklanmoqda...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CERTIFICATES -->
+        <section class="tab-pane" id="tab-certificates">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Yangi Sertifikat Qo'shish (Supabase Storage)</div>
+                </div>
+                <form id="certForm">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Fan yo'nalishi *</label>
+                            <select id="certCategory" class="select" required>
+                                <option value="math">Matematika</option>
+                                <option value="tarix">Tarix</option>
+                                <option value="english">Ingliz tili CEFR / IELTS</option>
+                                <option value="other">Boshqa fan</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Qisqa yorliq (Badge) *</label>
+                            <input type="text" id="certBadge" class="input" placeholder="Matematika — A+ (98%)" required>
+                        </div>
+                        <div class="field">
+                            <label>Tartib raqami</label>
+                            <input type="number" id="certSort" class="input" value="1">
+                        </div>
+                        <div class="field">
+                            <label>Sertifikat rasmi (JPG/PNG/WEBP) *</label>
+                            <input type="file" id="certFile" class="input" accept="image/*" required>
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom:14px;">
+                        <label>To'liq tavsif (O'quvchi F.I.Sh va natijasi) *</label>
+                        <input type="text" id="certTitle" class="input" placeholder="Aliyev Vali (10-sinf) — Matematika Milliy sertifikati A+ (64.2 ball)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="certSubmitBtn">
+                        <i class="fas fa-cloud-arrow-up"></i> Yuklash va Saytga Joylash
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-award"></i> Mavjud Sertifikatlar</div>
+                </div>
+                <div class="cms-grid" id="certsGrid"></div>
+            </div>
+        </section>
+
+        <!-- TAB 3: CAMPUS GALLERY -->
+        <section class="tab-pane" id="tab-gallery">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-camera"></i> Kampus Galereyasiga Rasm Qo'shish</div>
+                </div>
+                <form id="galForm">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Bo'lim nomi (Badge) *</label>
+                            <input type="text" id="galBadge" class="input" placeholder="STEM Laboratoriya" required>
+                        </div>
+                        <div class="field">
+                            <label>Belgi (Icon)</label>
+                            <select id="galIcon" class="select">
+                                <option value="fas fa-chalkboard">Sinfxona</option>
+                                <option value="fas fa-flask">Laboratoriya</option>
+                                <option value="fas fa-book">Kutubxona</option>
+                                <option value="fas fa-futbol">Sport majmuasi</option>
+                                <option value="fas fa-tree">Maktab hududi</option>
+                                <option value="fas fa-camera">Fotogalereya</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Tartib raqami</label>
+                            <input type="number" id="galSort" class="input" value="1">
+                        </div>
+                        <div class="field">
+                            <label>Rasm fayli *</label>
+                            <input type="file" id="galFile" class="input" accept="image/*" required>
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom:14px;">
+                        <label>Izoh / Sarlavha *</label>
+                        <input type="text" id="galTitle" class="input" placeholder="Zamonaviy robototexnika va kompyuter xonasi" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="galSubmitBtn">
+                        <i class="fas fa-cloud-arrow-up"></i> Galereyaga Joylash
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-images"></i> Kampus Galereyasi Rasmlari</div>
+                </div>
+                <div class="cms-grid" id="galGrid"></div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SCHOOL NEWS -->
+        <section class="tab-pane" id="tab-news">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-bullhorn"></i> Yangi Maqola yoki E'lon Joylash</div>
+                </div>
+                <form id="newsForm">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Rukn (Kategoriya) *</label>
+                            <input type="text" id="newsCategory" class="input" value="Yangilik" placeholder="Qabul / Yutuqlar / Tadbir" required>
+                        </div>
+                        <div class="field">
+                            <label>Sana *</label>
+                            <input type="date" id="newsDate" class="input" required>
+                        </div>
+                        <div class="field">
+                            <label>Muqova rasmi (ixtiyoriy)</label>
+                            <input type="file" id="newsFile" class="input" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom:12px;">
+                        <label>Sarlavha *</label>
+                        <input type="text" id="newsTitle" class="input" placeholder="O'quvchilarimiz viloyat olimpiadasida 1-o'rinni egalladi!" required>
+                    </div>
+                    <div class="field" style="margin-bottom:14px;">
+                        <label>Qisqacha matn *</label>
+                        <textarea id="newsSummary" class="textarea" placeholder="Yangilik mazmunini kiriting..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="newsSubmitBtn">
+                        <i class="fas fa-paper-plane"></i> E'lonni Saytga Chiqarish
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-newspaper"></i> Barcha Yangiliklar</div>
+                </div>
+                <div class="cms-grid" id="newsAdminGrid"></div>
+            </div>
+        </section>
+
+        <!-- TAB 5: BOT USERS & PASSWORD SETTINGS -->
+        <section class="tab-pane" id="tab-settings">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-key"></i> Admin Panel Parolini Yangilash</div>
+                </div>
+                <form id="passwordForm" style="max-width:460px;">
+                    <div class="field" style="margin-bottom:12px;">
+                        <label>Yangi parol (kamida 8 ta belgi) *</label>
+                        <input type="password" id="newPassword" class="input" minlength="8" placeholder="Yangi kuchli parol kiriting" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="pwdSubmitBtn">
+                        <i class="fas fa-save"></i> Parolni Saqlash
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-robot"></i> Telegram Bot Tasdiqlangan Admin va Foydalanuvchilari</div>
+                    <button class="btn btn-outline btn-sm" id="refreshBotUsersBtn"><i class="fas fa-rotate"></i> Yangilash</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Telegram ID</th>
+                                <th>F.I.Sh</th>
+                                <th>Username</th>
+                                <th>Telefon</th>
+                                <th>Maqomi</th>
+                                <th>Token</th>
+                                <th>Sana</th>
+                            </tr>
+                        </thead>
+                        <tbody id="botUsersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle" style="color:#10b981;"></i> <span id="toastMsg">Saqlandi!</span></div>
+
+<script>
+(function () {
+    const SUPABASE_URL = 'https://lzthytpezdadtobbampc.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const authScreen = document.getElementById('authScreen');
+    const appShell = document.getElementById('appShell');
+    const authError = document.getElementById('authError');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const adminEmailLabel = document.getElementById('adminEmailLabel');
+
+    let allApplications = [];
+    let realtimeChannel = null;
+
+    // Default date input to today
+    const newsDateInput = document.getElementById('newsDate');
+    if (newsDateInput) {
+        newsDateInput.value = new Date().toISOString().slice(0, 10);
+    }
+
+    function escapeHtml(val) {
+        if (val === null || val === undefined) return '';
+        return String(val)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const icon = toast.querySelector('i');
+        toastMsg.textContent = msg;
+        icon.className = isError ? 'fas fa-circle-exclamation' : 'fas fa-check-circle';
+        icon.style.color = isError ? '#ef4444' : '#10b981';
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    function formatDateTime(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return escapeHtml(iso);
+        return d.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+            ' ' + d.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    /* ================= AUTH FLOW ================= */
+    async function checkSession() {
+        const { data: { session } } = await sb.auth.getSession();
+        handleSession(session);
+    }
+
+    function handleSession(session) {
+        const isAdmin = session?.user?.app_metadata?.role === 'admin';
+        if (session && isAdmin) {
+            authScreen.style.display = 'none';
+            appShell.style.display = 'block';
+            adminEmailLabel.textContent = session.user.email;
+            loadAllDashboardData();
+            setupRealtime();
+        } else {
+            authScreen.style.display = 'flex';
+            appShell.style.display = 'none';
+            if (session && !isAdmin) {
+                authError.textContent = 'Ushbu hisobda Administrator huquqi mavjud emas.';
+                authError.style.display = 'block';
+                sb.auth.signOut();
+            }
+        }
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authError.style.display = 'none';
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tekshirilmoqda...';
+        try {
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            handleSession(data.session);
+        } catch (err) {
+            authError.textContent = 'Email yoki parol noto\'g\'ri! Qaytadan tekshiring.';
+            authError.style.display = 'block';
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-shield-halved"></i> Tizimga kirish';
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        if (realtimeChannel) sb.removeChannel(realtimeChannel);
+        await sb.auth.signOut();
+        handleSession(null);
+    });
+
+    /* ================= NAVIGATION ================= */
+    const tabTitles = {
+        applications: 'Qabul Arizalari',
+        certificates: 'Sertifikatlar Boshqaruvi',
+        gallery: 'Kampus Galereyasi',
+        news: 'Maktab Yangiliklari',
+        settings: 'Bot Adminlari va Sozlamalar'
+    };
+
+    document.querySelectorAll('.sb-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('pageTitle').textContent = tabTitles[tab] || 'Admin Panel';
+            document.getElementById('sidebar').classList.remove('open');
+        });
+    });
+
+    document.getElementById('mobMenuBtn').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    /* ================= STORAGE UPLOAD HELPER ================= */
+    async function uploadMediaFile(file, folder) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const safeBase = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
+        const filePath = `${folder}/${Date.now()}_${safeBase}.${ext}`;
+
+        const { error } = await sb.storage.from('school-media').upload(filePath, file, {
+            cacheControl: '31536000',
+            upsert: false
+        });
+        if (error) throw error;
+
+        const { data } = sb.storage.from('school-media').getPublicUrl(filePath);
+        return data.publicUrl;
+    }
+
+    async function tryRemoveStorageUrl(url) {
+        if (!url || !url.includes('/storage/v1/object/public/school-media/')) return;
+        const relPath = url.split('/storage/v1/object/public/school-media/')[1];
+        if (relPath) {
+            await sb.storage.from('school-media').remove([decodeURIComponent(relPath)]);
+        }
+    }
+
+    /* ================= 1. APPLICATIONS ================= */
+    async function loadApplications() {
+        const { data, error } = await sb
+            .from('applications')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            showToast('Arizalarni yuklashda xatolik: ' + error.message, true);
+            return;
+        }
+        allApplications = data || [];
+        document.getElementById('navAppsCount').textContent = allApplications.length;
+        document.getElementById('kpiTotal').textContent = allApplications.length;
+        document.getElementById('kpiNew').textContent = allApplications.filter(a => a.status === 'new').length;
+        document.getElementById('kpiContacted').textContent = allApplications.filter(a => a.status === 'contacted').length;
+        document.getElementById('kpiEnrolled').textContent = allApplications.filter(a => a.status === 'enrolled').length;
+        renderApplicationsTable();
+    }
+
+    function getFilteredApplications() {
+        const q = document.getElementById('appSearch').value.trim().toLowerCase();
+        const grade = document.getElementById('appGradeFilter').value;
+        const status = document.getElementById('appStatusFilter').value;
+
+        return allApplications.filter(a => {
+            if (grade !== 'all' && String(a.grade) !== grade) return false;
+            if (status !== 'all' && a.status !== status) return false;
+            if (q) {
+                const hay = `${a.parent_name} ${a.child_name} ${a.phone} ${a.notes || ''}`.toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            return true;
+        });
+    }
+
+    function renderApplicationsTable() {
+        const tbody = document.getElementById('appsTableBody');
+        const rows = getFilteredApplications();
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-muted);">Mos arizalar topilmadi.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = rows.map(a => {
+            const st = a.status || 'new';
+            return `
+            <tr data-id="${a.id}">
+                <td><strong>#${a.id}</strong></td>
+                <td style="white-space:nowrap;font-size:12.5px;color:var(--text-muted);">${formatDateTime(a.created_at)}</td>
+                <td><strong>${escapeHtml(a.parent_name)}</strong></td>
+                <td>${escapeHtml(a.child_name)}</td>
+                <td style="white-space:nowrap;"><a href="tel:${escapeHtml(a.phone)}" style="color:var(--brand-teal);font-weight:700;text-decoration:none;">${escapeHtml(a.phone)}</a></td>
+                <td><span style="font-weight:700;">${escapeHtml(a.grade)}-sinf</span></td>
+                <td>
+                    <select class="status-select status-${escapeHtml(st)}" data-action="status" data-id="${a.id}">
+                        <option value="new" ${st === 'new' ? 'selected' : ''}>🆕 Yangi</option>
+                        <option value="contacted" ${st === 'contacted' ? 'selected' : ''}>📞 Bog'lanildi</option>
+                        <option value="enrolled" ${st === 'enrolled' ? 'selected' : ''}>✅ Qabul qilindi</option>
+                        <option value="rejected" ${st === 'rejected' ? 'selected' : ''}>❌ Rad etildi</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="note-inline">
+                        <input type="text" value="${escapeHtml(a.notes || '')}" placeholder="Izoh yozish..." id="note-${a.id}">
+                        <button class="btn btn-outline btn-sm" data-action="save-note" data-id="${a.id}" title="Izohni saqlash"><i class="fas fa-check"></i></button>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm" data-action="del-app" data-id="${a.id}" title="O'chirish"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    document.getElementById('appSearch').addEventListener('input', renderApplicationsTable);
+    document.getElementById('appGradeFilter').addEventListener('change', renderApplicationsTable);
+    document.getElementById('appStatusFilter').addEventListener('change', renderApplicationsTable);
+    document.getElementById('refreshAppsBtn').addEventListener('click', loadApplications);
+
+    document.getElementById('appsTableBody').addEventListener('change', async (e) => {
+        const sel = e.target.closest('select[data-action="status"]');
+        if (!sel) return;
+        const id = Number(sel.getAttribute('data-id'));
+        const newStatus = sel.value;
+        const { error } = await sb.from('applications').update({
+            status: newStatus,
+            updated_at: new Date().toISOString()
+        }).eq('id', id);
+
+        if (error) {
+            showToast('Holatni yangilashda xatolik!', true);
+        } else {
+            showToast(`Ariza #${id} holati yangilandi!`);
+            loadApplications();
+        }
+    });
+
+    document.getElementById('appsTableBody').addEventListener('click', async (e) => {
+        const noteBtn = e.target.closest('button[data-action="save-note"]');
+        if (noteBtn) {
+            const id = Number(noteBtn.getAttribute('data-id'));
+            const noteVal = document.getElementById('note-' + id).value.trim();
+            const { error } = await sb.from('applications').update({
+                notes: noteVal,
+                updated_at: new Date().toISOString()
+            }).eq('id', id);
+            if (error) showToast('Izoh saqlashda xatolik!', true);
+            else {
+                const row = allApplications.find(x => x.id === id);
+                if (row) row.notes = noteVal;
+                showToast(`Ariza #${id} izohi saqlandi!`);
+            }
+            return;
+        }
+
+        const delBtn = e.target.closest('button[data-action="del-app"]');
+        if (delBtn) {
+            const id = Number(delBtn.getAttribute('data-id'));
+            if (!confirm(`Haqiqatan ham #${id}-arizani o'chirmoqchimisiz?`)) return;
+            const { error } = await sb.from('applications').delete().eq('id', id);
+            if (error) showToast('O\'chirishda xatolik!', true);
+            else {
+                showToast(`Ariza #${id} o'chirildi.`);
+                loadApplications();
+            }
+        }
+    });
+
+    // CSV / Excel Export (UTF-8 BOM)
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        const rows = getFilteredApplications();
+        if (!rows.length) {
+            showToast('Eksport qilish uchun arizalar yo\'q!', true);
+            return;
+        }
+        const headers = ['ID', 'Sana', 'Ota-ona F.I.Sh', 'Farzand F.I.Sh', 'Telefon', 'Sinf', 'Holat', 'Izoh'];
+        const csvLines = [headers.join(',')];
+        rows.forEach(r => {
+            const cols = [
+                r.id,
+                formatDateTime(r.created_at),
+                r.parent_name,
+                r.child_name,
+                r.phone,
+                `${r.grade}-sinf`,
+                r.status,
+                r.notes || ''
+            ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`);
+            csvLines.push(cols.join(','));
+        });
+        const blob = new Blob(['\uFEFF' + csvLines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Al_Khorazmiy_Arizalar_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Excel (CSV) fayl yuklab olindi!');
+    });
+
+    /* ================= 2. CERTIFICATES ================= */
+    async function loadCertificates() {
+        const { data, error } = await sb
+            .from('certificates')
+            .select('*')
+            .order('sort_order', { ascending: true })
+            .order('id', { ascending: false });
+        if (error) return;
+        const list = data || [];
+        document.getElementById('navCertsCount').textContent = list.length;
+
+        const grid = document.getElementById('certsGrid');
+        grid.innerHTML = list.map(c => `
+            <div class="cms-card">
+                <div class="cms-thumb">
+                    <img src="${escapeHtml(c.image_url)}" alt="${escapeHtml(c.title)}" loading="lazy">
+                    <span class="cms-pill">${escapeHtml(c.badge_text)}</span>
+                    <span class="cms-status ${c.is_published ? 'pub' : 'hid'}">${c.is_published ? 'Faol' : 'Yashirin'}</span>
+                </div>
+                <div class="cms-body">
+                    <div class="cms-title">${escapeHtml(c.title)}</div>
+                    <div class="cms-sub">Yo'nalish: <strong>${escapeHtml(c.category)}</strong> &bull; Tartib: ${c.sort_order}</div>
+                    <div class="cms-actions">
+                        <button class="btn btn-outline btn-sm" onclick="window._toggleCms('certificates', ${c.id}, ${!c.is_published})">
+                            <i class="fas ${c.is_published ? 'fa-eye-slash' : 'fa-eye'}"></i> ${c.is_published ? 'Yashirish' : 'Ko\'rsatish'}
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="window._deleteCms('certificates', ${c.id}, '${escapeHtml(c.image_url)}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('certForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('certSubmitBtn');
+        const file = document.getElementById('certFile').files[0];
+        if (!file) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+        try {
+            const publicUrl = await uploadMediaFile(file, 'certificates');
+            const { error } = await sb.from('certificates').insert({
+                category: document.getElementById('certCategory').value,
+                badge_text: document.getElementById('certBadge').value.trim(),
+                title: document.getElementById('certTitle').value.trim(),
+                sort_order: Number(document.getElementById('certSort').value || 1),
+                image_url: publicUrl,
+                is_published: true
+            });
+            if (error) throw error;
+            e.target.reset();
+            showToast('Yangi sertifikat saytga joylandi!');
+            loadCertificates();
+        } catch (err) {
+            showToast('Yuklashda xatolik: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Yuklash va Saytga Joylash';
+        }
+    });
+
+    /* ================= 3. GALLERY ================= */
+    async function loadGallery() {
+        const { data, error } = await sb
+            .from('gallery_items')
+            .select('*')
+            .order('sort_order', { ascending: true })
+            .order('id', { ascending: false });
+        if (error) return;
+        const list = data || [];
+        document.getElementById('navGalCount').textContent = list.length;
+
+        const grid = document.getElementById('galGrid');
+        grid.innerHTML = list.map(g => `
+            <div class="cms-card">
+                <div class="cms-thumb">
+                    <img src="${escapeHtml(g.image_url)}" alt="${escapeHtml(g.title)}" loading="lazy">
+                    <span class="cms-pill"><i class="${escapeHtml(g.icon_class)}"></i> ${escapeHtml(g.badge_text)}</span>
+                    <span class="cms-status ${g.is_published ? 'pub' : 'hid'}">${g.is_published ? 'Faol' : 'Yashirin'}</span>
+                </div>
+                <div class="cms-body">
+                    <div class="cms-title">${escapeHtml(g.title)}</div>
+                    <div class="cms-actions">
+                        <button class="btn btn-outline btn-sm" onclick="window._toggleCms('gallery_items', ${g.id}, ${!g.is_published})">
+                            <i class="fas ${g.is_published ? 'fa-eye-slash' : 'fa-eye'}"></i> ${g.is_published ? 'Yashirish' : 'Ko\'rsatish'}
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="window._deleteCms('gallery_items', ${g.id}, '${escapeHtml(g.image_url)}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('galForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('galSubmitBtn');
+        const file = document.getElementById('galFile').files[0];
+        if (!file) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+        try {
+            const publicUrl = await uploadMediaFile(file, 'gallery');
+            const { error } = await sb.from('gallery_items').insert({
+                badge_text: document.getElementById('galBadge').value.trim(),
+                icon_class: document.getElementById('galIcon').value,
+                title: document.getElementById('galTitle').value.trim(),
+                sort_order: Number(document.getElementById('galSort').value || 1),
+                image_url: publicUrl,
+                is_published: true
+            });
+            if (error) throw error;
+            e.target.reset();
+            showToast('Galereya rasmi muvaffaqiyatli qo\'shildi!');
+            loadGallery();
+        } catch (err) {
+            showToast('Xatolik: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Galereyaga Joylash';
+        }
+    });
+
+    /* ================= 4. NEWS ================= */
+    async function loadNews() {
+        const { data, error } = await sb
+            .from('news_posts')
+            .select('*')
+            .order('published_date', { ascending: false })
+            .order('id', { ascending: false });
+        if (error) return;
+        const list = data || [];
+        document.getElementById('navNewsCount').textContent = list.length;
+
+        const grid = document.getElementById('newsAdminGrid');
+        grid.innerHTML = list.map(n => `
+            <div class="cms-card">
+                <div class="cms-thumb">
+                    <img src="${escapeHtml(n.image_url || 'school_building.webp')}" alt="${escapeHtml(n.title)}" loading="lazy">
+                    <span class="cms-pill">${escapeHtml(n.category)}</span>
+                    <span class="cms-status ${n.is_published ? 'pub' : 'hid'}">${n.is_published ? 'Faol' : 'Yashirin'}</span>
+                </div>
+                <div class="cms-body">
+                    <div class="cms-sub"><i class="fas fa-calendar-alt"></i> ${escapeHtml(n.published_date)}</div>
+                    <div class="cms-title">${escapeHtml(n.title)}</div>
+                    <div class="cms-sub">${escapeHtml(n.summary)}</div>
+                    <div class="cms-actions">
+                        <button class="btn btn-outline btn-sm" onclick="window._toggleCms('news_posts', ${n.id}, ${!n.is_published})">
+                            <i class="fas ${n.is_published ? 'fa-eye-slash' : 'fa-eye'}"></i> ${n.is_published ? 'Yashirish' : 'Ko\'rsatish'}
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="window._deleteCms('news_posts', ${n.id}, '${escapeHtml(n.image_url)}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('newsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('newsSubmitBtn');
+        const file = document.getElementById('newsFile').files[0];
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joylanmoqda...';
+        try {
+            let imageUrl = 'school_building.webp';
+            if (file) {
+                imageUrl = await uploadMediaFile(file, 'news');
+            }
+            const { error } = await sb.from('news_posts').insert({
+                category: document.getElementById('newsCategory').value.trim(),
+                published_date: document.getElementById('newsDate').value,
+                title: document.getElementById('newsTitle').value.trim(),
+                summary: document.getElementById('newsSummary').value.trim(),
+                image_url: imageUrl,
+                is_published: true
+            });
+            if (error) throw error;
+            e.target.reset();
+            document.getElementById('newsDate').value = new Date().toISOString().slice(0, 10);
+            showToast('Yangilik saytga muvaffaqiyatli chiqarildi!');
+            loadNews();
+        } catch (err) {
+            showToast('Xatolik: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> E\'lonni Saytga Chiqarish';
+        }
+    });
+
+    /* SHARED CMS TOGGLE & DELETE */
+    window._toggleCms = async function (table, id, nextState) {
+        const { error } = await sb.from(table).update({ is_published: nextState }).eq('id', id);
+        if (error) {
+            showToast('Xatolik: ' + error.message, true);
+            return;
+        }
+        showToast(nextState ? 'Saytda faollashtirildi!' : 'Saytdan vaqtincha yashirildi.');
+        if (table === 'certificates') loadCertificates();
+        if (table === 'gallery_items') loadGallery();
+        if (table === 'news_posts') loadNews();
+    };
+
+    window._deleteCms = async function (table, id, imgUrl) {
+        if (!confirm('Haqiqatan ham ushbu ma\'lumotni o\'chirmoqchimisiz?')) return;
+        const { error } = await sb.from(table).delete().eq('id', id);
+        if (error) {
+            showToast('O\'chirishda xatolik: ' + error.message, true);
+            return;
+        }
+        await tryRemoveStorageUrl(imgUrl);
+        showToast('Muvaffaqiyatli o\'chirildi!');
+        if (table === 'certificates') loadCertificates();
+        if (table === 'gallery_items') loadGallery();
+        if (table === 'news_posts') loadNews();
+    };
+
+    /* ================= 5. BOT USERS & PASSWORD ================= */
+    async function loadBotUsers() {
+        const { data, error } = await sb
+            .from('bot_users')
+            .select('*')
+            .order('registered_at', { ascending: false });
+        if (error) return;
+        const tbody = document.getElementById('botUsersTableBody');
+        const list = data || [];
+        tbody.innerHTML = list.map(u => `
+            <tr>
+                <td><code>${escapeHtml(u.telegram_id)}</code></td>
+                <td><strong>${escapeHtml(u.full_name)}</strong></td>
+                <td>${escapeHtml(u.username)}</td>
+                <td>${escapeHtml(u.phone)}</td>
+                <td><span style="color:var(--brand-teal);font-weight:700;">${escapeHtml(u.role)}</span></td>
+                <td><code>${escapeHtml(u.token_used)}</code></td>
+                <td style="font-size:12.5px;color:var(--text-muted);">${formatDateTime(u.registered_at)}</td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('refreshBotUsersBtn').addEventListener('click', loadBotUsers);
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pwd = document.getElementById('newPassword').value;
+        const btn = document.getElementById('pwdSubmitBtn');
+        btn.disabled = true;
+        try {
+            const { error } = await sb.auth.updateUser({ password: pwd });
+            if (error) throw error;
+            e.target.reset();
+            showToast('Admin paroli muvaffaqiyatli yangilandi!');
+        } catch (err) {
+            showToast('Parol yangilashda xatolik: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    function setupRealtime() {
+        if (realtimeChannel) return;
+        realtimeChannel = sb
+            .channel('admin-applications-feed')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'applications' }, (payload) => {
+                showToast(`🆕 Yangi ariza keldi: ${payload.new?.parent_name || ''}`);
+                loadApplications();
+            })
+            .subscribe();
+    }
+
+    function loadAllDashboardData() {
+        loadApplications();
+        loadCertificates();
+        loadGallery();
+        loadNews();
+        loadBotUsers();
+    }
+
+    checkSession();
+})();
+</script>
+</body>
+</html>

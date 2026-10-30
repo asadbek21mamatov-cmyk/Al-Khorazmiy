@@ -133,6 +133,9 @@
         document.querySelectorAll('.lang-item').forEach(item => {
             item.classList.toggle('active', item.getAttribute('data-lang') === lang);
         });
+        if (typeof window.refreshAwardTabCounts === 'function') {
+            window.refreshAwardTabCounts();
+        }
     }
 
     // Initialize Lang
@@ -438,36 +441,60 @@
                 const timeStr = now.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
                                 ' ' + now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
 
-                // Backend API endpoint (securely routed via bot.py server)
-                const isLocalFile = window.location.protocol === 'file:';
-                const apiUrl = isLocalFile || window.location.port !== '5000'
-                    ? 'http://localhost:5000/api/apply'
-                    : '/api/apply';
+                const SUPABASE_EDGE_APPLY = 'https://lzthytpezdadtobbampc.supabase.co/functions/v1/submit-application';
+                const SUPABASE_PUB_KEY = 'sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp';
+                const payloadObj = {
+                    parent: parent,
+                    child: child,
+                    phone: phone,
+                    grade: grade,
+                    time: timeStr
+                };
 
+                let submittedOk = false;
                 try {
-                    const response = await fetch(apiUrl, {
+                    const cloudResp = await fetch(SUPABASE_EDGE_APPLY, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            parent: parent,
-                            child: child,
-                            phone: phone,
-                            grade: grade,
-                            time: timeStr
-                        })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_PUB_KEY
+                        },
+                        body: JSON.stringify(payloadObj)
                     });
-
-                    if (response.ok) {
-                        const resData = await response.json();
-                        if (resData.botDeepLink) {
+                    if (cloudResp.ok) {
+                        const resData = await cloudResp.json();
+                        submittedOk = Boolean(resData && resData.ok);
+                        if (resData && resData.botDeepLink) {
                             const modalBotLink = document.getElementById('modalBotLink');
-                            if (modalBotLink) {
-                                modalBotLink.href = resData.botDeepLink;
-                            }
+                            if (modalBotLink) modalBotLink.href = resData.botDeepLink;
                         }
                     }
-                } catch (fetchErr) {
-                    console.warn("Backend serverga ulanishda ogohlantirish (bot.py ishga tushirilganligini tekshiring):", fetchErr);
+                } catch (cloudErr) {
+                    console.warn('Cloud submit-application xatosi, lokal server sinab ko\'rilmoqda:', cloudErr);
+                }
+
+                // Fallback to local bot.py /api/apply only if cloud endpoint was unreachable
+                if (!submittedOk) {
+                    const isLocalFile = window.location.protocol === 'file:';
+                    const localApiUrl = isLocalFile || window.location.port !== '5000'
+                        ? 'http://localhost:5000/api/apply'
+                        : '/api/apply';
+                    try {
+                        const response = await fetch(localApiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payloadObj)
+                        });
+                        if (response.ok) {
+                            const resData = await response.json();
+                            if (resData.botDeepLink) {
+                                const modalBotLink = document.getElementById('modalBotLink');
+                                if (modalBotLink) modalBotLink.href = resData.botDeepLink;
+                            }
+                        }
+                    } catch (fetchErr) {
+                        console.warn('Lokal serverga ulanishda ogohlantirish:', fetchErr);
+                    }
                 }
 
                 modal.classList.add('show');
@@ -695,13 +722,15 @@
     }
 
     const awardsSlider = initSlider('awardsTrack', 'awardsPrevBtn', 'awardsNextBtn', 'awardsDots', 2200);
-    initSlider('facTrack', 'facPrevBtn', 'facNextBtn', null, 2800);
+    const facSlider = initSlider('facTrack', 'facPrevBtn', 'facNextBtn', null, 2800);
 
-    // Subject Filter Tabs for Awards
-    const filterTabs = document.querySelectorAll('#awardsFilterTabs .award-tab-btn');
-    filterTabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterTabs.forEach(b => b.classList.remove('active'));
+    // Subject Filter Tabs for Awards (Delegated so dynamic tabs work seamlessly)
+    const awardsFilterTabsEl = document.getElementById('awardsFilterTabs');
+    if (awardsFilterTabsEl) {
+        awardsFilterTabsEl.addEventListener('click', (e) => {
+            const btn = e.target.closest('.award-tab-btn');
+            if (!btn) return;
+            awardsFilterTabsEl.querySelectorAll('.award-tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const filter = btn.getAttribute('data-filter') || 'all';
             if (awardsSlider) {
@@ -709,7 +738,7 @@
                 awardsSlider.resetAuto();
             }
         });
-    });
+    }
 
     if (lightboxClose) {
         lightboxClose.addEventListener('click', () => lightboxModal.classList.remove('show'));
@@ -803,3 +832,179 @@
             }
         });
     });
+
+
+    /* ==========================================================
+       10. SUPABASE CLOUD DYNAMIC CMS LOADER
+       Loads live Certificates, Campus Gallery & School News
+       using publishable key only (RLS-protected, non-blocking)
+       ========================================================== */
+    (function initSupabaseCMS() {
+        const SB_URL = 'https://lzthytpezdadtobbampc.supabase.co';
+        const SB_PUB_KEY = 'sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp';
+
+        function escapeAttr(val) {
+            return escapeHtml(val).replace(/"/g, '&quot;');
+        }
+
+        function formatUzDate(isoDate) {
+            if (!isoDate) return '';
+            const parts = String(isoDate).slice(0, 10).split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}.${parts[1]}.${parts[0]}`;
+            }
+            return escapeHtml(isoDate);
+        }
+
+        function catIcon(cat) {
+            if (cat === 'math') return 'fas fa-calculator';
+            if (cat === 'tarix') return 'fas fa-landmark';
+            if (cat === 'english') return 'fas fa-language';
+            return 'fas fa-award';
+        }
+
+        window.refreshAwardTabCounts = function refreshAwardTabCounts() {
+            const track = document.getElementById('awardsTrack');
+            const tabsWrap = document.getElementById('awardsFilterTabs');
+            if (!track || !tabsWrap) return;
+
+            const originals = Array.from(track.querySelectorAll('.slide-card:not([data-cloned])'));
+            const counts = { all: originals.length, math: 0, tarix: 0, english: 0, other: 0 };
+            originals.forEach(c => {
+                const cat = c.getAttribute('data-cat') || 'other';
+                if (counts[cat] !== undefined) counts[cat]++;
+                else counts.other++;
+            });
+
+            const lang = localStorage.getItem('al_lang') || 'uz';
+            const labelsByLang = {
+                uz: { all: 'Barchasi', math: 'Matematika', tarix: 'Tarix', english: 'Ingliz tili CEFR', other: 'Boshqa' },
+                ru: { all: 'Все', math: 'Математика', tarix: 'История', english: 'Английский CEFR', other: 'Другое' },
+                en: { all: 'All', math: 'Mathematics', tarix: 'History', english: 'English CEFR', other: 'Other' }
+            };
+            const lbl = labelsByLang[lang] || labelsByLang.uz;
+
+            ['all', 'math', 'tarix', 'english'].forEach(key => {
+                const btn = tabsWrap.querySelector(`.award-tab-btn[data-filter="${key}"] span`);
+                if (btn) btn.textContent = `${lbl[key]} (${counts[key]})`;
+            });
+
+            let otherBtn = tabsWrap.querySelector('.award-tab-btn[data-filter="other"]');
+            if (counts.other > 0) {
+                if (!otherBtn) {
+                    otherBtn = document.createElement('button');
+                    otherBtn.className = 'award-tab-btn';
+                    otherBtn.setAttribute('data-filter', 'other');
+                    otherBtn.innerHTML = `<i class="fas fa-award"></i> <span>${lbl.other} (${counts.other})</span>`;
+                    tabsWrap.appendChild(otherBtn);
+                } else {
+                    const sp = otherBtn.querySelector('span');
+                    if (sp) sp.textContent = `${lbl.other} (${counts.other})`;
+                }
+            } else if (otherBtn) {
+                otherBtn.remove();
+            }
+        };
+
+        async function sbFetch(tablePath) {
+            const resp = await fetch(`${SB_URL}/rest/v1/${tablePath}`, {
+                headers: { 'apikey': SB_PUB_KEY }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            return resp.json();
+        }
+
+        async function loadDynamicContent() {
+            const [certsRes, galRes, newsRes] = await Promise.allSettled([
+                sbFetch('certificates?select=*&is_published=eq.true&order=sort_order.asc,id.desc'),
+                sbFetch('gallery_items?select=*&is_published=eq.true&order=sort_order.asc,id.desc'),
+                sbFetch('news_posts?select=*&is_published=eq.true&order=published_date.desc,id.desc')
+            ]);
+
+            // 1. Certificates (#awardsTrack)
+            if (certsRes.status === 'fulfilled' && Array.isArray(certsRes.value) && certsRes.value.length > 0) {
+                const awardsTrack = document.getElementById('awardsTrack');
+                if (awardsTrack) {
+                    awardsTrack.innerHTML = certsRes.value.map((row, idx) => {
+                        const cat = escapeAttr(row.category || 'other');
+                        const img = escapeAttr(row.image_url || '');
+                        const title = escapeAttr(row.title || '');
+                        const badge = escapeHtml(row.badge_text || '');
+                        const icon = catIcon(row.category);
+                        return `
+                <div class="slide-card" data-cat="${cat}" data-index="${idx}" data-src="${img}" data-title="${title}">
+                    <img src="${img}" alt="${title}" loading="lazy">
+                    <div class="slide-card-overlay">
+                        <span class="slide-badge"><i class="${icon}"></i> <span>${badge}</span></span>
+                        <div class="slide-card-title">${escapeHtml(row.title || '')}</div>
+                    </div>
+                </div>`;
+                    }).join('');
+
+                    window.refreshAwardTabCounts();
+                    const activeBtn = document.querySelector('#awardsFilterTabs .award-tab-btn.active');
+                    const curFilter = activeBtn ? (activeBtn.getAttribute('data-filter') || 'all') : 'all';
+                    if (awardsSlider) awardsSlider.filterBy(curFilter);
+                }
+            }
+
+            // 2. Campus Gallery (#facTrack)
+            if (galRes.status === 'fulfilled' && Array.isArray(galRes.value) && galRes.value.length > 0) {
+                const facTrack = document.getElementById('facTrack');
+                if (facTrack) {
+                    facTrack.innerHTML = galRes.value.map((row, idx) => {
+                        const img = escapeAttr(row.image_url || '');
+                        const title = escapeAttr(row.title || '');
+                        const badge = escapeHtml(row.badge_text || '');
+                        const icon = escapeAttr(row.icon_class || 'fas fa-camera');
+                        return `
+                <div class="slide-card" data-index="${idx}" data-src="${img}" data-title="${title}">
+                    <img src="${img}" alt="${title}" loading="lazy">
+                    <div class="slide-card-overlay">
+                        <span class="slide-badge"><i class="${icon}" aria-hidden="true"></i> <span>${badge}</span></span>
+                        <div class="slide-card-title">${escapeHtml(row.title || '')}</div>
+                    </div>
+                </div>`;
+                    }).join('');
+                    if (facSlider) facSlider.filterBy('all');
+                }
+            }
+
+            // 3. School News (#newsGrid)
+            if (newsRes.status === 'fulfilled' && Array.isArray(newsRes.value) && newsRes.value.length > 0) {
+                const newsGrid = document.getElementById('newsGrid');
+                if (newsGrid) {
+                    const lang = localStorage.getItem('al_lang') || 'uz';
+                    const dict = (typeof I18N !== 'undefined' && I18N[lang]) ? I18N[lang] : {};
+                    const btnText = escapeHtml(dict.news_btn_apply || 'Batafsil / Ariza');
+                    newsGrid.innerHTML = newsRes.value.map((post) => {
+                        const img = escapeAttr(post.image_url || 'school_building.webp');
+                        const cat = escapeHtml(post.category || 'Yangilik');
+                        const title = escapeHtml(post.title || '');
+                        const summary = escapeHtml(post.summary || '');
+                        const dateStr = formatUzDate(post.published_date);
+                        return `
+            <article class="news-card">
+                <div class="news-img">
+                    <img src="${img}" alt="${escapeAttr(post.title || '')}" loading="lazy">
+                    <span class="news-badge">${cat}</span>
+                </div>
+                <div class="news-body">
+                    <div class="news-date"><i class="fas fa-calendar-alt" aria-hidden="true"></i> ${dateStr}</div>
+                    <h3 class="news-card-title">${title}</h3>
+                    <p class="news-summary">${summary}</p>
+                    <a href="#admission" class="news-footer-link"><span data-i18n="news_btn_apply">${btnText}</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </article>`;
+                    }).join('');
+                }
+            }
+        }
+
+        // Load asynchronously after first paint so intro & LCP stay instantaneous
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => loadDynamicContent(), { timeout: 1200 });
+        } else {
+            setTimeout(loadDynamicContent, 150);
+        }
+    })();

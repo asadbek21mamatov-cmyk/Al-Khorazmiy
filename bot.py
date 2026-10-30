@@ -27,6 +27,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
+import urllib.request
 import telebot
 from telebot import types
 import threading
@@ -35,9 +36,28 @@ import html
 from flask import Flask, request, jsonify, send_from_directory, abort
 from flask_cors import CORS
 
-BOT_TOKEN = "8970878526:AAFP_eJB79VatZuhg5rkyE3t7yrzL3Uw_44"
-TARGET_CHAT_ID = -1004255969278  # @AlKhorazmiy_registration
-OWNER_ID = "6599495111"           # Asadbek Mamatov
+# Load .env file automatically (zero external dependencies)
+ENV_FILE = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(ENV_FILE):
+    try:
+        with open(ENV_FILE, "r", encoding="utf-8") as _ef:
+            for _line in _ef:
+                _line = _line.strip()
+                if _line and not _line.startswith("#") and "=" in _line:
+                    _k, _v = _line.split("=", 1)
+                    os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+    except Exception:
+        pass
+
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8970878526:AAFP_eJB79VatZuhg5rkyE3t7yrzL3Uw_44")
+TARGET_CHAT_ID = int(os.environ.get("TELEGRAM_CHAT_ID", "-1004255969278"))  # @AlKhorazmiy_registration
+OWNER_ID = os.environ.get("OWNER_TELEGRAM_ID", "6599495111")                 # Asadbek Mamatov
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://lzthytpezdadtobbampc.supabase.co").rstrip("/")
+SUPABASE_PUB_KEY = os.environ.get("SUPABASE_PUBLISHABLE_KEY", "sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp")
+BOT_SYNC_KEY = os.environ.get("BOT_SYNC_KEY", "")
+BOT_SYNC_URL = f"{SUPABASE_URL}/functions/v1/bot-sync"
+SUBMIT_APP_URL = f"{SUPABASE_URL}/functions/v1/submit-application"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -81,6 +101,88 @@ def save_data(data):
         logger.error(f"Fayl saqlashda xatolik: {e}")
 
 db = load_data()
+recent_cloud_apps = []
+
+
+def _call_bot_sync(payload: dict, timeout: int = 8):
+    """Supabase bot-sync Edge Function bilan xavfsiz bog'lanish"""
+    if not BOT_SYNC_KEY:
+        return None
+    try:
+        req = urllib.request.Request(
+            BOT_SYNC_URL,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "x-bot-sync-key": BOT_SYNC_KEY,
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        logger.warning(f"Supabase bot-sync ulanish ogohlantirishi: {e}")
+        return None
+
+
+def sync_from_supabase():
+    """Supabase Cloud bazasidan foydalanuvchilar, tokenlar va oxirgi arizalarni sinxronlash"""
+    global db, recent_cloud_apps
+    res = _call_bot_sync({"action": "get_state"})
+    if res and res.get("ok") and isinstance(res.get("state"), dict):
+        st = res["state"]
+        # Merge verified_users & admins while preserving local user_id->token pending mapping
+        cloud_users = st.get("verified_users") or {}
+        db.setdefault("verified_users", {}).update(cloud_users)
+
+        for aid in st.get("admins") or []:
+            if aid not in db.setdefault("admins", []):
+                db["admins"].append(aid)
+        if OWNER_ID not in db["admins"]:
+            db["admins"].append(OWNER_ID)
+
+        for ut in st.get("used_tokens") or []:
+            if ut not in db.setdefault("used_tokens", []):
+                db["used_tokens"].append(ut)
+
+        cloud_pending = st.get("pending_tokens") or {}
+        db.setdefault("pending_tokens", {}).update(cloud_pending)
+
+        recent_cloud_apps = res.get("recent_applications") or []
+        save_data(db)
+        return True
+    return False
+
+
+def supabase_verify_user_async(telegram_id: str, full_name: str, username: str, phone: str, token_used: str):
+    """Yangi tasdiqlangan admin va ishlatilgan tokenni Supabase bazasiga yozish"""
+    def _worker():
+        _call_bot_sync({
+            "action": "verify_user",
+            "telegram_id": telegram_id,
+            "full_name": full_name,
+            "username": username,
+            "phone": phone,
+            "token_used": token_used,
+            "role": "Administrator",
+            "is_admin": True,
+        })
+    threading.Thread(target=_worker, daemon=True).start()
+
+
+def supabase_create_token_async(token: str, parent: str = "Telegram Admin havola"):
+    """Yangi 1 martalik tokenni Supabase bazasiga yozish"""
+    def _worker():
+        _call_bot_sync({
+            "action": "create_token",
+            "token": token,
+            "parent": parent,
+        })
+    threading.Thread(target=_worker, daemon=True).start()
+
+
+# Dastur ishga tushganda Supabase bilan dastlabki sinxronlash
+sync_from_supabase()
 
 
 def get_admin_keyboard():
@@ -158,6 +260,7 @@ def make_user_admin(message, phone_number):
         db.setdefault("used_tokens", []).append(token)
 
     save_data(db)
+    supabase_verify_user_async(user_id, full_name, username, phone_number, token)
 
     # 2. Telegram chatida admin menyusini o'rnatish
     setup_admin_menu(message.chat.id)
@@ -242,6 +345,10 @@ def handle_start(message):
             reply_markup=get_admin_keyboard()
         )
         return
+
+    # Agar token kelsa, Supabase Cloud bilan sinxronlab tekshiramiz
+    if token:
+        sync_from_supabase()
 
     # Agar token avval ishlatilgan bo'lsa
     if token and token in db.get("used_tokens", []):
@@ -332,13 +439,17 @@ def admin_stats(message):
         bot.reply_to(message, "⛔ Bu bo'lim faqat tasdiqlangan administratorlar uchun.")
         return
 
+    sync_from_supabase()
     verified_count = len(db.get("verified_users", {}))
     used_tokens_count = len(db.get("used_tokens", []))
     admins_count = len(db.get("admins", []))
+    apps_count = len(recent_cloud_apps)
+    new_apps = sum(1 for a in recent_cloud_apps if a.get("status") == "new")
 
     text = (
-        f"📊 <b>BOT VA TIZIM STATISTIKASI</b>\n"
+        f"📊 <b>BOT VA SUPABASE CLOUD STATISTIKASI</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📝 <b>Oxirgi onlayn arizalar (Cloud):</b> {apps_count} ta (yangi: {new_apps} ta)\n"
         f"👥 <b>Tasdiqlangan foydalanuvchilar:</b> {verified_count} ta\n"
         f"👑 <b>Administratorlar soni:</b> {admins_count} ta\n"
         f"🔑 <b>Ishlatilgan 1 martalik tokenlar:</b> {used_tokens_count} ta\n"
@@ -357,26 +468,46 @@ def admin_last_requests(message):
         bot.reply_to(message, "⛔ Bu bo'lim faqat administratorlar uchun.")
         return
 
-    users = db.get("verified_users", {})
-    if not users:
-        bot.send_message(message.chat.id, "📭 Hozircha ro'yxatdan o'tgan foydalanuvchilar mavjud emas.")
-        return
+    sync_from_supabase()
+    status_labels = {
+        "new": "🆕 Yangi",
+        "contacted": "📞 Bog'lanildi",
+        "enrolled": "✅ Qabul qilindi",
+        "rejected": "❌ Rad etildi",
+    }
 
-    text = "📋 <b>OXIRGI RO'YXATDAN O'TGANLAR:</b>\n━━━━━━━━━━━━━━━━━━━━━\n"
-    for uid, data in list(users.items())[-10:]:
-        u_name = data.get('name', 'Noma\'lum')
-        u_user = data.get('username', '')
-        u_phone = data.get('phone', '')
-        u_time = data.get('registered_at', '')
-        u_role = data.get('role', 'Admin')
-        text += (
-            f"👤 <b>{u_name}</b> ({u_user})\n"
-            f"📞 Tel: <code>{u_phone}</code>\n"
-            f"🎖 Maqomi: {u_role}\n"
-            f"⏰ Vaqt: {u_time}\n"
-            f"🆔 ID: <code>{uid}</code>\n"
-            f"─────────────────────\n"
-        )
+    if recent_cloud_apps:
+        text = "📋 <b>SAYTDAN KELGAN OXIRGI ARIZALAR (SUPABASE):</b>\n━━━━━━━━━━━━━━━━━━━━━\n"
+        for app_row in recent_cloud_apps[:10]:
+            aid = app_row.get("id", "")
+            p_name = html.escape(str(app_row.get("parent_name", "")))
+            c_name = html.escape(str(app_row.get("child_name", "")))
+            ph = html.escape(str(app_row.get("phone", "")))
+            gr = html.escape(str(app_row.get("grade", "")))
+            st_lbl = status_labels.get(app_row.get("status", "new"), "🆕 Yangi")
+            c_at = str(app_row.get("created_at", ""))[:16].replace("T", " ")
+            text += (
+                f"<b>#{aid}</b> | {st_lbl}\n"
+                f"👤 Ota-ona: <b>{p_name}</b>\n"
+                f"👶 Farzand: <b>{c_name}</b> ({gr}-sinf)\n"
+                f"📞 Tel: <code>{ph}</code> | ⏰ {c_at}\n"
+                f"─────────────────────\n"
+            )
+    else:
+        users = db.get("verified_users", {})
+        if not users:
+            bot.send_message(message.chat.id, "📭 Hozircha arizalar mavjud emas.")
+            return
+        text = "📋 <b>OXIRGI RO'YXATDAN O'TGANLAR:</b>\n━━━━━━━━━━━━━━━━━━━━━\n"
+        for uid, data in list(users.items())[-10:]:
+            u_name = html.escape(str(data.get("name", "Noma'lum")))
+            u_user = html.escape(str(data.get("username", "")))
+            u_phone = html.escape(str(data.get("phone", "")))
+            text += (
+                f"👤 <b>{u_name}</b> ({u_user})\n"
+                f"📞 Tel: <code>{u_phone}</code> | 🆔 <code>{uid}</code>\n"
+                f"─────────────────────\n"
+            )
 
     bot.send_message(message.chat.id, text, reply_markup=get_admin_keyboard())
 
@@ -410,14 +541,25 @@ def admin_new_link(message):
         return
 
     try:
+        one_time_tok = f"join_{secrets.token_hex(4)}"
+        bot_link = f"https://t.me/al_khorazmiy_registration_bot?start={one_time_tok}"
+        db.setdefault("pending_tokens", {})[one_time_tok] = {
+            "parent": f"Admin {message.from_user.first_name}",
+            "created_at": datetime.now().strftime("%d.%m.%Y %H:%M"),
+        }
+        save_data(db)
+        supabase_create_token_async(one_time_tok, f"Admin {message.from_user.first_name}")
+
         invite = bot.create_chat_invite_link(
             chat_id=TARGET_CHAT_ID,
             member_limit=1,
             name=f"Manual_{datetime.now().strftime('%H%M%S')}"
         )
         text = (
-            f"🔑 <b>YANGI BIR MARTALIK HAVOLA YARATILDI!</b>\n\n"
-            f"Ushbu havoladan faqat <b>1 nafar</b> foydalanuvchi bir marta kira oladi:\n\n"
+            f"🔑 <b>YANGI BIR MARTALIK HAVOLALAR YARATILDI!</b>\n\n"
+            f"1️⃣ <b>Bot orqali tasdiqlash havolasi (Cloud):</b>\n"
+            f"👉 <code>{bot_link}</code>\n\n"
+            f"2️⃣ <b>To'g'ridan-to'g'ri kanal havolasi (1 kishilik):</b>\n"
             f"👉 <code>{invite.invite_link}</code>\n\n"
             f"<i>Havolani yangi ota-ona yoki xodimga yuborishingiz mumkin.</i>"
         )
@@ -704,6 +846,10 @@ def protect_sensitive_files():
 def serve_index():
     return send_from_directory(".", "index.html")
 
+@app.route("/admin")
+def serve_admin():
+    return send_from_directory(".", "admin.html")
+
 @app.route("/api/apply", methods=["POST", "OPTIONS"])
 def handle_web_application():
     if request.method == "OPTIONS":
@@ -722,7 +868,32 @@ def handle_web_application():
     if not parent or not child or not phone or not grade:
         return jsonify({"ok": False, "error": "Barcha maydonlar to'ldirilishi shart"}), 400
 
-    # 1 martalik xavfsiz token yaratish
+    # Avval Supabase Cloud submit-application Edge Function orqali saqlash va yuborish
+    try:
+        cloud_req = urllib.request.Request(
+            SUBMIT_APP_URL,
+            data=json.dumps({
+                "parent": str(data.get("parent", "")).strip(),
+                "child": str(data.get("child", "")).strip(),
+                "phone": str(data.get("phone", "")).strip(),
+                "grade": str(data.get("grade", "")).strip(),
+                "time": str(data.get("time") or datetime.now().strftime("%d.%m.%Y %H:%M")).strip(),
+            }).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_PUB_KEY,
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(cloud_req, timeout=10) as c_resp:
+            c_json = json.loads(c_resp.read().decode("utf-8"))
+            if c_json.get("ok"):
+                sync_from_supabase()
+                return jsonify(c_json), 200
+    except Exception as cloud_err:
+        logger.warning(f"Cloud submit-application xatosi, lokal zaxira ishlatilmoqda: {cloud_err}")
+
+    # Lokal zaxira: 1 martalik xavfsiz token yaratish
     one_time_token = f"join_{secrets.token_hex(4)}"
     bot_deep_link = f"https://t.me/al_khorazmiy_registration_bot?start={one_time_token}"
 

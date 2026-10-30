@@ -9,6 +9,7 @@
             nav_about: "Maktab haqida",
             nav_gallery: "Galereya",
             nav_videos: "Videolar",
+            nav_news: "Yangiliklar",
             nav_programs: "Dasturlar",
             nav_teachers: "O'qituvchilar",
             nav_facilities: "Imkoniyatlar",
@@ -284,7 +285,13 @@
             
             modal_title: "Arizangiz qabul qilindi!",
             modal_desc: "Rahmat! Tez orada maktab ma'muriyati mutaxassisi siz bilan bog'lanadi.",
-            modal_btn: "Yopish"
+            modal_tg_btn: "Telegram Bot orqali tasdiqlash",
+            modal_btn: "Yopish",
+            aw_tab_other: "Boshqa",
+            news_tag: "Yangiliklar & E'lonlar",
+            news_title: "Maktab <span>Yangiliklari</span>",
+            news_sub: "Al-Khorazmiy International School hayotidagi eng so'nggi yangiliklar, e'lonlar va g'alabalar",
+            news_btn_apply: "Batafsil / Ariza"
         },
         
         ru: {
@@ -293,6 +300,7 @@
             nav_about: "О школе",
             nav_gallery: "Галерея",
             nav_videos: "Видео",
+            nav_news: "Новости",
             nav_programs: "Программы",
             nav_teachers: "Учителя",
             nav_facilities: "Условия",
@@ -568,7 +576,13 @@
             
             modal_title: "Ваша заявка принята!",
             modal_desc: "Спасибо! В ближайшее время специалист администрации свяжется с вами.",
-            modal_btn: "Закрыть"
+            modal_tg_btn: "Подтвердить через Telegram-бот",
+            modal_btn: "Закрыть",
+            aw_tab_other: "Другое",
+            news_tag: "Новости и объявления",
+            news_title: "Школьные <span>Новости</span>",
+            news_sub: "Последние события, объявления и победы Al-Khorazmiy International School",
+            news_btn_apply: "Подробнее / Заявка"
         },
         
         en: {
@@ -577,6 +591,7 @@
             nav_about: "About Us",
             nav_gallery: "Gallery",
             nav_videos: "Videos",
+            nav_news: "News",
             nav_programs: "Programs",
             nav_teachers: "Teachers",
             nav_facilities: "Campus",
@@ -852,6 +867,12 @@
             
             modal_title: "Application Received!",
             modal_desc: "Thank you! Our admissions coordinator will contact you shortly.",
-            modal_btn: "Close"
+            modal_tg_btn: "Verify via Telegram Bot",
+            modal_btn: "Close",
+            aw_tab_other: "Other",
+            news_tag: "News & Announcements",
+            news_title: "School <span>News</span>",
+            news_sub: "Latest updates, announcements, and milestones from Al-Khorazmiy International School",
+            news_btn_apply: "Learn More / Apply"
         }
     };
