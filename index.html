@@ -30,9 +30,8 @@
     <meta name="twitter:description" content="Farzandingizga xalqaro sifatli ta'lim bering — IELTS, STEM, Robototexnika va zamonaviy kampus.">
     <meta name="twitter:image" content="school_building.webp">
 
-    <!-- Preload LCP Hero Image -->
-    <link rel="preload" as="image" href="intro_studio_scene.webp" fetchpriority="high">
-    <link rel="preload" as="image" href="intro_studio_mask.webp" fetchpriority="high">
+    <!-- Preload Intro Video & LCP Hero Image -->
+    <link rel="preload" as="video" href="intro_video.mp4" type="video/mp4" fetchpriority="high">
     <link rel="preload" as="image" href="school_building.webp" fetchpriority="high">
     
     <!-- Google Fonts -->
@@ -166,27 +165,26 @@
 <span id="nl-badge-frame" hidden style="display:none!important;width:0!important;height:0!important;"></span>
 <span id="nl-hud-frame" hidden style="display:none!important;width:0!important;height:0!important;"></span>
 
-<!-- CINEMATIC 3D METALLIC STUDIO INTRO (3.0s, ZERO-LAG GPU) -->
-<div id="netflixIntro" class="netflix-intro-overlay" aria-label="Al-Khorazmiy kirish animatsiyasi">
-    <!-- Volumetric Netflix Prism Rays & Ambient Studio Depth -->
-    <div class="intro-prism-burst"></div>
-    <canvas id="introParticlesCanvas" class="intro-particles-canvas"></canvas>
-
-    <!-- 3D Monument Stage -->
-    <div class="intro-monument-stage">
-        <div class="intro-monument-box">
-            <!-- 1. Photorealistic 3D Brushed Emerald Studio Monument -->
-            <img src="intro_studio_scene.webp" fetchpriority="high" decoding="sync" alt="Al-Xorazmiy School" class="intro-studio-img">
-
-            <!-- 2. Act I: Radial Gold & Emerald Rim-Light Ignition (Masked to 3D Metal Only!) -->
-            <div class="intro-metal-ignition"></div>
-
-            <!-- 3. Act II: Luxury Diagonal Platinum-Gold Studio Specular Sweep (Masked to 3D Metal Only!) -->
-            <div class="intro-metal-sheen"></div>
-
-            <!-- 4. Act III: Cinema Anamorphic Horizontal Lens Flare -->
-            <div class="intro-anamorphic-flare"></div>
-        </div>
+<!-- CINEMATIC ENTRANCE VIDEO INTRO -->
+<div id="netflixIntro" class="netflix-intro-overlay" aria-label="Al-Khorazmiy kirish videosi">
+    <video
+        id="introVideo"
+        class="intro-fullscreen-video"
+        src="intro_video.mp4"
+        autoplay
+        muted
+        playsinline
+        webkit-playsinline
+        preload="auto"
+    ></video>
+    <div class="intro-controls">
+        <button type="button" id="introSoundBtn" class="intro-ctrl-btn" aria-label="Ovozni yoqish" title="Ovozni yoqish">
+            <i class="fas fa-volume-mute" aria-hidden="true"></i>
+        </button>
+        <button type="button" id="introSkipBtn" class="intro-ctrl-btn intro-skip-btn" aria-label="O'tkazib yuborish">
+            <span>O'tkazib yuborish</span>
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </button>
     </div>
 </div>
 

@@ -4,102 +4,101 @@
  */
 
 /* ==========================================================
-       1. 3D METALLIC STUDIO CINEMA INTRO (3.0s, ZERO-FREEZE)
+       1. CINEMATIC ENTRANCE VIDEO INTRO (ZERO-FREEZE)
        ========================================================== */
     (function initNetflixIntro() {
         const introOverlay = document.getElementById('netflixIntro');
+        const introVideo = document.getElementById('introVideo');
+        const soundBtn = document.getElementById('introSoundBtn');
+        const skipBtn = document.getElementById('introSkipBtn');
         if (!introOverlay) return;
 
         let introClosed = false;
-        let rafId = 0;
 
         function closeNetflixIntro() {
             if (introClosed) return;
             introClosed = true;
+            clearTimeout(safetyTimer);
             introOverlay.classList.add('hide');
             document.body.classList.remove('intro-playing');
 
             setTimeout(() => {
-                if (rafId) cancelAnimationFrame(rafId);
+                if (introVideo && !introVideo.paused) {
+                    try { introVideo.pause(); } catch (_) {}
+                }
                 introOverlay.style.display = 'none';
             }, 520);
         }
 
         document.body.classList.add('intro-playing');
 
-        // Unconditional guaranteed 3.0s exit (2.48s stage + 0.52s portal zoom = 3.00s) — NEVER freezes!
-        const safetyTimer = setTimeout(closeNetflixIntro, 2480);
+        // Unconditional guaranteed exit (5.03s video + buffer = 5.6s max) — NEVER freezes!
+        const safetyTimer = setTimeout(closeNetflixIntro, 5600);
+
+        function updateSoundIcon() {
+            if (!soundBtn || !introVideo) return;
+            const icon = soundBtn.querySelector('i');
+            if (!icon) return;
+            if (introVideo.muted) {
+                icon.className = 'fas fa-volume-mute';
+                soundBtn.setAttribute('aria-label', 'Ovozni yoqish');
+                soundBtn.setAttribute('title', 'Ovozni yoqish');
+            } else {
+                icon.className = 'fas fa-volume-up';
+                soundBtn.setAttribute('aria-label', "Ovozni o'chirish");
+                soundBtn.setAttribute('title', "Ovozni o'chirish");
+            }
+        }
+
+        if (soundBtn && introVideo) {
+            soundBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                introVideo.muted = !introVideo.muted;
+                if (!introVideo.muted) {
+                    introVideo.volume = 1.0;
+                    introVideo.play().catch(() => {});
+                }
+                updateSoundIcon();
+            });
+        }
+
+        if (skipBtn) {
+            skipBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeNetflixIntro();
+            });
+        }
+
         introOverlay.addEventListener('click', () => {
-            clearTimeout(safetyTimer);
             closeNetflixIntro();
         });
 
-        // Lightweight 2D Canvas Cinema Stardust & Warp Streaks (< 0.15ms/frame, zero GPU stall)
-        const canvas = document.getElementById('introParticlesCanvas');
-        const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
-        if (!ctx) return;
-
-        let w = (canvas.width = window.innerWidth);
-        let h = (canvas.height = window.innerHeight);
-
-        const particles = Array.from({ length: 42 }, (_, i) => {
-            const angle = (i / 42) * Math.PI * 2 + (i % 7) * 0.31;
-            const dist = 30 + ((i * 53) % 260);
-            return {
-                angle,
-                dist,
-                speed: 0.65 + ((i * 19) % 100) * 0.018,
-                size: 1.1 + (i % 3) * 0.75,
-                gold: i % 3 === 0
-            };
-        });
-
-        const t0 = performance.now();
-        function drawParticles(now) {
-            if (introClosed) return;
-            const dt = (now - t0) * 0.001;
-            if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            ctx.clearRect(0, 0, w, h);
-
-            const cx = w * 0.5;
-            const cy = h * 0.46;
-            const warp = dt > 1.85 ? Math.pow((dt - 1.85) / 1.15, 2) * 8.5 : 0;
-            const alphaEnv = Math.min(1, dt * 2.2) * (dt > 2.55 ? Math.max(0, 1 - (dt - 2.55) / 0.45) : 1);
-
-            for (let i = 0; i < particles.length; i++) {
-                const pt = particles[i];
-                const r = pt.dist + dt * pt.speed * 58 + warp * pt.speed * 65;
-                const x = cx + Math.cos(pt.angle) * r;
-                const y = cy + Math.sin(pt.angle) * r * 0.78;
-
-                if (warp > 0.15) {
-                    // Netflix-style radial warp light streaks during final portal zoom!
-                    const tailR = Math.max(0, r - (8 + warp * 22) * pt.speed);
-                    const tx = cx + Math.cos(pt.angle) * tailR;
-                    const ty = cy + Math.sin(pt.angle) * tailR * 0.78;
-                    ctx.beginPath();
-                    ctx.moveTo(tx, ty);
-                    ctx.lineTo(x, y);
-                    ctx.strokeStyle = pt.gold
-                        ? `rgba(253, 224, 71, ${(0.55 * alphaEnv).toFixed(3)})`
-                        : `rgba(45, 212, 191, ${(0.55 * alphaEnv).toFixed(3)})`;
-                    ctx.lineWidth = pt.size;
-                    ctx.stroke();
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(x, y, pt.size, 0, Math.PI * 2);
-                    ctx.fillStyle = pt.gold
-                        ? `rgba(253, 224, 71, ${(0.65 * alphaEnv).toFixed(3)})`
-                        : `rgba(94, 234, 212, ${(0.6 * alphaEnv).toFixed(3)})`;
-                    ctx.fill();
+        if (introVideo) {
+            introVideo.addEventListener('timeupdate', () => {
+                if (introVideo.currentTime >= 3.85) {
+                    introOverlay.classList.add('flash-white');
                 }
+                // Dissolve smoothly during the bright white ending transition
+                if (introVideo.currentTime >= 4.35) {
+                    closeNetflixIntro();
+                }
+            });
+
+            introVideo.addEventListener('ended', closeNetflixIntro);
+            introVideo.addEventListener('error', closeNetflixIntro);
+
+            introVideo.muted = true;
+            const playPromise = introVideo.play();
+            if (playPromise && typeof playPromise.then === 'function') {
+                playPromise.then(() => {
+                    updateSoundIcon();
+                }).catch(() => {
+                    closeNetflixIntro();
+                });
             }
-            rafId = requestAnimationFrame(drawParticles);
+        } else {
+            closeNetflixIntro();
         }
-        rafId = requestAnimationFrame(drawParticles);
     })();
 
 /* ==========================================================
