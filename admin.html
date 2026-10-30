@@ -633,6 +633,12 @@
         /* ==========================================================
            HIDE EXTERNAL HOSTING BADGE ("Powered by Netlify")
            ========================================================== */
+        #nl-badge-frame,
+        #nl-hud-frame,
+        iframe#nl-badge-frame,
+        iframe#nl-hud-frame,
+        iframe[title*="Netlify"],
+        script[data-nf-variant],
         a[href*="netlify.com"],
         iframe[src*="netlify"],
         div[id*="netlify"],
@@ -655,7 +661,7 @@
     <script>
     (function () {
         var ALLOWED_IDS = {
-            netflixIntro: 1, header: 1, mobileOverlay: 1, mobileMenu: 1,
+            'nl-badge-frame': 1, 'nl-hud-frame': 1, netflixIntro: 1, header: 1, mobileOverlay: 1, mobileMenu: 1,
             lightboxModal: 1, successModal: 1, backToTop: 1,
             authScreen: 1, appShell: 1, toast: 1
         };
@@ -674,7 +680,10 @@
             if (!el || el.nodeType !== 1) return false;
             if (el.id && ALLOWED_IDS[el.id]) return false;
             var sig = ((el.id || '') + ' ' + (typeof el.className === 'string' ? el.className : '') + ' ' + el.tagName).toLowerCase();
-            if (sig.indexOf('netlify') !== -1) return true;
+            if (el.tagName === 'IFRAME' && (el.id === 'nl-badge-frame' || el.id === 'nl-hud-frame')) return true;
+            var ttl = (el.getAttribute && el.getAttribute('title')) || '';
+            if (ttl.toLowerCase().indexOf('netlify') !== -1) return true;
+            if (el.tagName === 'IFRAME' && sig.indexOf('netlify') !== -1) return true;
             var link = (el.getAttribute && (el.getAttribute('href') || el.getAttribute('src') || '')) || '';
             if (link.toLowerCase().indexOf('netlify.com') !== -1) return true;
 
@@ -735,6 +744,9 @@
     </script>
 </head>
 <body>
+<!-- Prevent Netlify HUD / Powered by Netlify iframe from mounting -->
+<span id="nl-badge-frame" hidden style="display:none!important;width:0!important;height:0!important;"></span>
+<span id="nl-hud-frame" hidden style="display:none!important;width:0!important;height:0!important;"></span>
 
 <!-- ================= 1. LOGIN SCREEN ================= -->
 <div class="auth-screen" id="authScreen">

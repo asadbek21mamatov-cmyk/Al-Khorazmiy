@@ -1408,6 +1408,12 @@
         /* ==========================================================
            HIDE EXTERNAL HOSTING BADGE ("Powered by Netlify")
            ========================================================== */
+        #nl-badge-frame,
+        #nl-hud-frame,
+        iframe#nl-badge-frame,
+        iframe#nl-hud-frame,
+        iframe[title*="Netlify"],
+        script[data-nf-variant],
         a[href*="netlify.com"],
         iframe[src*="netlify"],
         div[id*="netlify"],

@@ -49,7 +49,7 @@ if os.path.exists(ENV_FILE):
     except Exception:
         pass
 
-BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8970878526:AAFP_eJB79VatZuhg5rkyE3t7yrzL3Uw_44")
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TARGET_CHAT_ID = int(os.environ.get("TELEGRAM_CHAT_ID", "-1004255969278"))  # @AlKhorazmiy_registration
 OWNER_ID = os.environ.get("OWNER_TELEGRAM_ID", "6599495111")                 # Asadbek Mamatov
 
