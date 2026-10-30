@@ -31,7 +31,8 @@
     <meta name="twitter:image" content="school_building.webp">
 
     <!-- Preload LCP Hero Image -->
-    <link rel="preload" as="image" href="intro_studio_emblem.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="intro_studio_scene.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="intro_studio_mask.webp" fetchpriority="high">
     <link rel="preload" as="image" href="school_building.webp" fetchpriority="high">
     
     <!-- Google Fonts -->
@@ -77,10 +78,28 @@
 </head>
 <body>
 
-<!-- CINEMATIC 3D RAY-LIT STUDIO INTRO (3.0s) -->
+<!-- CINEMATIC 3D METALLIC STUDIO INTRO (3.0s, ZERO-LAG GPU) -->
 <div id="netflixIntro" class="netflix-intro-overlay" aria-label="Al-Khorazmiy kirish animatsiyasi">
-    <canvas id="introWebglCanvas" class="intro-webgl-canvas"></canvas>
-    <img id="introEmblemTex" src="intro_studio_emblem.webp" fetchpriority="high" decoding="sync" alt="Al-Xorazmiy School" class="intro-fallback-img">
+    <!-- Volumetric Netflix Prism Rays & Ambient Studio Depth -->
+    <div class="intro-prism-burst"></div>
+    <canvas id="introParticlesCanvas" class="intro-particles-canvas"></canvas>
+
+    <!-- 3D Monument Stage -->
+    <div class="intro-monument-stage">
+        <div class="intro-monument-box">
+            <!-- 1. Photorealistic 3D Brushed Emerald Studio Monument -->
+            <img src="intro_studio_scene.webp" fetchpriority="high" decoding="sync" alt="Al-Xorazmiy School" class="intro-studio-img">
+
+            <!-- 2. Act I: Radial Gold & Emerald Rim-Light Ignition (Masked to 3D Metal Only!) -->
+            <div class="intro-metal-ignition"></div>
+
+            <!-- 3. Act II: Luxury Diagonal Platinum-Gold Studio Specular Sweep (Masked to 3D Metal Only!) -->
+            <div class="intro-metal-sheen"></div>
+
+            <!-- 4. Act III: Cinema Anamorphic Horizontal Lens Flare -->
+            <div class="intro-anamorphic-flare"></div>
+        </div>
+    </div>
 </div>
 
 <!-- HEADER -->
