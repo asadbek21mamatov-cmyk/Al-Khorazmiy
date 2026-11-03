@@ -285,58 +285,63 @@
     </nav>
 </div>
 
-<!-- HERO SECTION -->
+<!-- HERO SECTION (RESPONSIVE HERO BANNER SKELETON) -->
 <main>
-<section id="hero">
+<section id="hero" class="hero-banner-section">
     <div class="hero-bg"><img src="school_building.webp" alt="Al-Khorazmiy Maktabi binosi" fetchpriority="high" decoding="async"></div>
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-left reveal-left">
-                <div class="hero-badge" data-i18n="hero_badge">Namanganning №1 Xalqaro Maktabi</div>
-                <h1 class="hero-title" data-i18n="hero_title">
-                    Farzandingizga <span class="highlight">Xalqaro</span><br>Sifatli <span class="gold">Ta'lim</span> Bering
-                </h1>
-                <p class="hero-desc" data-i18n="hero_desc">
-                    Al-Khorazmiy International School — zamonaviy texnologiyalar, chuqurlashtirilgan ingliz tili va STEM fanlari orqali farzandingizni dunyoga tayyorlaydigan innovatsion ta'lim markazi.
-                </p>
-                <div class="hero-actions">
-                    <a href="#admission" class="btn btn-green"><i class="fas fa-pen-to-square"></i> <span data-i18n="hero_btn_apply">2026-2027 Qabulga Yozilish</span></a>
-                    <a href="#about" class="btn btn-outline-white"><i class="fas fa-play-circle"></i> <span data-i18n="hero_btn_about">Maktab haqida</span></a>
-                    <a href="#gallery" class="btn btn-outline-white"><i class="fas fa-images"></i> <span data-i18n="hero_btn_gallery">Yutuqlar (Galereya)</span></a>
-                </div>
-                
-                <div class="hero-stats">
-                    <div class="hstat-item">
-                        <div class="hstat-num">450<span>+</span></div>
-                        <div class="hstat-label" data-i18n="stat_students">O'quvchi o'rni</div>
-                    </div>
-                    <div class="hstat-item">
-                        <div class="hstat-num">51<span>+</span></div>
-                        <div class="hstat-label" data-i18n="stat_teachers">Malakali pedagog</div>
-                    </div>
-                    <div class="hstat-item">
-                        <div class="hstat-num">4<span>+</span></div>
-                        <div class="hstat-label" data-i18n="stat_foreign">Xorijlik mutaxassis</div>
-                    </div>
-                    <div class="hstat-item">
-                        <div class="hstat-num">12<span> mlrd</span></div>
-                        <div class="hstat-label" data-i18n="stat_invest">Investitsiya (so'm)</div>
-                    </div>
-                </div>
+    <div class="hero-ring-overlay" aria-hidden="true"></div>
+    <div class="container hero-centered-shell">
+        <div class="hero-centered-main">
+            <div class="hero-glass-badge animate-fade-slide-in-1">
+                <span class="hero-badge-pill">2026–2027</span>
+                <span class="hero-badge-text" data-i18n="hero_badge">Namanganning №1 Xalqaro Maktabi</span>
             </div>
-            
-            <div class="hero-right-grid reveal-right">
-                <div class="hero-img-card">
-                    <img src="students_classroom_1790344421651.webp" alt="Sinfxona">
-                    <div class="hero-img-label" data-i18n="hero_img_class">Zamonaviy sinfxonalar</div>
+
+            <h1 class="hero-title animate-fade-slide-in-2" data-i18n="hero_title">
+                Farzandingizga <span class="highlight">Xalqaro</span><br>Sifatli <span class="gold">Ta'lim</span> Bering
+            </h1>
+
+            <p class="hero-desc animate-fade-slide-in-3" data-i18n="hero_desc">
+                Al-Khorazmiy International School — zamonaviy texnologiyalar, chuqurlashtirilgan ingliz tili va STEM fanlari orqali farzandingizni dunyoga tayyorlaydigan innovatsion ta'lim markazi.
+            </p>
+
+            <div class="hero-actions animate-fade-slide-in-4">
+                <a href="#admission" class="hero-btn-primary">
+                    <span data-i18n="hero_btn_apply">2026-2027 Qabulga Yozilish</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hero-btn-icon" aria-hidden="true">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#videos" class="hero-btn-secondary">
+                    <span data-i18n="hero_btn_about">Maktab haqida</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hero-btn-icon" aria-hidden="true">
+                        <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-bottom-strip">
+            <p class="hero-partners-title animate-fade-slide-in-1">
+                Xalqaro ta'lim standartlari va asosiy ko'rsatkichlarimiz
+            </p>
+            <div class="hero-stats hero-partners-grid animate-fade-slide-in-2">
+                <div class="hstat-item hero-partner-pill">
+                    <div class="hstat-num">450<span>+</span></div>
+                    <div class="hstat-label" data-i18n="stat_students">O'quvchi o'rni</div>
                 </div>
-                <div class="hero-img-card">
-                    <img src="stem_lab_1790344438969.webp" alt="STEM">
-                    <div class="hero-img-label" data-i18n="hero_img_stem">STEM Laboratoriya</div>
+                <div class="hstat-item hero-partner-pill">
+                    <div class="hstat-num">51<span>+</span></div>
+                    <div class="hstat-label" data-i18n="stat_teachers">Malakali pedagog</div>
                 </div>
-                <div class="hero-img-card">
-                    <img src="sports_facility_1790344450271.webp" alt="Sport">
-                    <div class="hero-img-label" data-i18n="hero_img_sport">Sport majmuasi</div>
+                <div class="hstat-item hero-partner-pill">
+                    <div class="hstat-num">4<span>+</span></div>
+                    <div class="hstat-label" data-i18n="stat_foreign">Xorijlik mutaxassis</div>
+                </div>
+                <div class="hstat-item hero-partner-pill">
+                    <div class="hstat-num">12<span> mlrd</span></div>
+                    <div class="hstat-label" data-i18n="stat_invest">Investitsiya (so'm)</div>
                 </div>
             </div>
         </div>

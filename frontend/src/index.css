@@ -354,3 +354,53 @@ html.liquid-nav-ready #header.island-condensed:not(:hover) .navbar .logo {
     padding-left: 5px !important;
   }
 }
+
+/* ==========================================================
+   HERO BANNER ANIMATIONS & THEME VARIABLES
+   ========================================================== */
+:root {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-serif: 'Outfit', 'Instrument Serif', serif;
+  --bg-0: #09090b;
+  --bg-100: #18181b;
+  --bg-200: #27272a;
+  --bg-300: #3f3f46;
+  --text-100: #fafafa;
+  --text-200: #e4e4e7;
+  --text-300: #a1a1aa;
+  --text-400: #71717a;
+  --radius: 0.5rem;
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+.animate-fade-slide-in-1 {
+  animation: fadeSlideIn 0.8s ease-out 0.1s both;
+}
+.animate-fade-slide-in-2 {
+  animation: fadeSlideIn 0.8s ease-out 0.2s both;
+}
+.animate-fade-slide-in-3 {
+  animation: fadeSlideIn 0.8s ease-out 0.3s both;
+}
+.animate-fade-slide-in-4 {
+  animation: fadeSlideIn 0.8s ease-out 0.4s both;
+}
+
+.font-instrument-serif {
+  font-family: 'Outfit', 'Instrument Serif', serif;
+}
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
