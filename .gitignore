@@ -3,3 +3,5 @@ bot_data.json
 __pycache__/
 *.pyc
 scratch/
+node_modules/
+frontend/node_modules/

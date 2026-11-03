@@ -44,6 +44,8 @@
     
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Liquid Glass navbar (React island, built from frontend/) -->
+    <link rel="stylesheet" href="assets/liquid-navbar/liquid-navbar.css">
 
     <!-- Schema.org Structured Data (Google Rich Results) -->
     <script type="application/ld+json">
@@ -227,6 +229,9 @@
                 <li><a href="#admission" data-i18n="nav_admission">Ariza Qoldirish</a></li>
                 <li><a href="#contact" data-i18n="nav_contact">Aloqa</a></li>
             </ul>
+
+            <!-- Liquid Glass navbar mounts here (falls back to the list above without JS) -->
+            <div id="liquidNavRoot" class="liquid-nav-root"></div>
             
             <div class="nav-cta">
                 <a href="tel:+998943030707" class="nav-phone"><i class="fas fa-phone-alt" aria-hidden="true"></i> +998 94 303 07 07</a>
@@ -1431,5 +1436,6 @@
     <!-- Multilingual Translations & Main Scripts -->
     <script src="js/i18n.js"></script>
     <script src="js/main.js"></script>
+<script src="assets/liquid-navbar/liquid-navbar.js" defer></script>
 </body>
 </html>

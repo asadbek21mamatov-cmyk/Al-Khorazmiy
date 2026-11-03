@@ -1,0 +1,81 @@
+/* Tailwind v4 — WITHOUT preflight, so the existing static site's CSS is never reset.
+   Utilities are prefixed (`tw:`) and only scanned from the React sources, so classes
+   like `.container` / `.hidden` from index.html can never collide with Tailwind. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "../components";
+@source "./";
+
+/* ---------- Liquid navbar host inside the site header ---------- */
+html.liquid-nav-ready .navbar .nav-links {
+  display: none !important;
+}
+html.liquid-nav-ready .navbar .nav-phone {
+  display: none !important; /* phone stays visible in the top bar */
+}
+
+.liquid-nav-root {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.liquid-nav-root:empty {
+  display: none;
+}
+
+/* site palette for the water + text */
+.liquid-nav-root .nimbus-nav {
+  --n-fg: #0b3b3c;
+  --n-fg-soft: rgba(11, 59, 60, 0.62);
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+.liquid-nav-root .nimbus-nav[data-tone="dark"] {
+  --n-fg: #f1f7ff;
+  --n-fg-soft: rgba(241, 247, 255, 0.7);
+}
+.liquid-nav-root .nimbus-item {
+  height: 40px;
+  padding: 0 12px;
+  gap: 7px;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
+  padding: 0 12px;
+}
+.liquid-nav-root .nimbus-item[aria-current="page"] {
+  color: #089391;
+}
+.liquid-nav-root .nimbus-nav[data-tone="dark"] .nimbus-item[aria-current="page"] {
+  color: #5eead4;
+}
+
+/* phones & small tablets: floating dock at the bottom of the screen */
+@media (max-width: 900px) {
+  .liquid-nav-root {
+    position: fixed;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 8500;
+    max-width: calc(100vw - 16px);
+  }
+  .liquid-nav-root .nimbus-item {
+    height: 42px;
+    padding: 0 11px;
+  }
+  .liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
+    padding: 0 11px;
+  }
+  html.liquid-nav-ready #backToTop {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+@media (max-width: 380px) {
+  .liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
+    padding: 0 9px;
+  }
+}
