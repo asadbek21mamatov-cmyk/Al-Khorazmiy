@@ -37,7 +37,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -288,7 +288,9 @@
 <!-- HERO SECTION (RESPONSIVE HERO BANNER SKELETON) -->
 <main>
 <section id="hero" class="hero-banner-section">
-    <div class="hero-bg"><img src="school_building.webp" alt="Al-Khorazmiy Maktabi binosi" fetchpriority="high" decoding="async"></div>
+    <div class="hero-bg">
+        <img src="assets/hero/hero_bg.jpg" alt="Al-Khorazmiy International School" fetchpriority="high" decoding="async">
+    </div>
     <div class="hero-ring-overlay" aria-hidden="true"></div>
     <div class="container hero-centered-shell">
         <div class="hero-centered-main">
@@ -298,7 +300,7 @@
             </div>
 
             <h1 class="hero-title animate-fade-slide-in-2" data-i18n="hero_title">
-                Farzandingizga <span class="highlight">Xalqaro</span><br>Sifatli <span class="gold">Ta'lim</span> Bering
+                Farzandingizga <span class="highlight">Xalqaro</span><br class="hero-title-break">Sifatli <span class="gold">Ta'lim</span> Bering
             </h1>
 
             <p class="hero-desc animate-fade-slide-in-3" data-i18n="hero_desc">
@@ -308,7 +310,7 @@
             <div class="hero-actions animate-fade-slide-in-4">
                 <a href="#admission" class="hero-btn-primary">
                     <span data-i18n="hero_btn_apply">2026-2027 Qabulga Yozilish</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hero-btn-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hero-btn-icon" aria-hidden="true">
                         <path d="M5 12h14"></path>
                         <path d="m12 5 7 7-7 7"></path>
                     </svg>
@@ -323,26 +325,15 @@
         </div>
 
         <div class="hero-bottom-strip">
-            <p class="hero-partners-title animate-fade-slide-in-1">
-                Xalqaro ta'lim standartlari va asosiy ko'rsatkichlarimiz
+            <p class="hero-partners-title animate-fade-slide-in-1" data-i18n="hero_partners_title">
+                Xalqaro ta'lim standartlari va hamkor tashkilotlarimiz
             </p>
-            <div class="hero-stats hero-partners-grid animate-fade-slide-in-2">
-                <div class="hstat-item hero-partner-pill">
-                    <div class="hstat-num">450<span>+</span></div>
-                    <div class="hstat-label" data-i18n="stat_students">O'quvchi o'rni</div>
-                </div>
-                <div class="hstat-item hero-partner-pill">
-                    <div class="hstat-num">51<span>+</span></div>
-                    <div class="hstat-label" data-i18n="stat_teachers">Malakali pedagog</div>
-                </div>
-                <div class="hstat-item hero-partner-pill">
-                    <div class="hstat-num">4<span>+</span></div>
-                    <div class="hstat-label" data-i18n="stat_foreign">Xorijlik mutaxassis</div>
-                </div>
-                <div class="hstat-item hero-partner-pill">
-                    <div class="hstat-num">12<span> mlrd</span></div>
-                    <div class="hstat-label" data-i18n="stat_invest">Investitsiya (so'm)</div>
-                </div>
+            <div class="hero-partners-grid animate-fade-slide-in-2">
+                <a href="#about" class="hero-partner-logo-item" title="Cambridge Assessment International Education" aria-label="Cambridge Education" style="background-image: url('assets/hero/partner_1.png');"></a>
+                <a href="#programs" class="hero-partner-logo-item" title="STEM & Robotics Innovation Lab" aria-label="STEM Innovation" style="background-image: url('assets/hero/partner_2.png');"></a>
+                <a href="#gallery" class="hero-partner-logo-item" title="IELTS International English Certificate" aria-label="IELTS International" style="background-image: url('assets/hero/partner_3.png');"></a>
+                <a href="#teachers" class="hero-partner-logo-item" title="Global Native English Speakers" aria-label="Native Speakers" style="background-image: url('assets/hero/partner_4.png');"></a>
+                <a href="#facilities" class="hero-partner-logo-item" title="Advanced IT & Campus Infrastructure" aria-label="Modern Campus" style="background-image: url('assets/hero/partner_5.png');"></a>
             </div>
         </div>
     </div>
@@ -1442,5 +1433,6 @@
     <script src="js/i18n.js"></script>
     <script src="js/main.js"></script>
 <script src="assets/liquid-navbar/liquid-navbar.js" defer></script>
+
 </body>
 </html>

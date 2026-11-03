@@ -16,12 +16,13 @@
             nav_admission: "Ariza Qoldirish",
             nav_contact: "Aloqa",
             
-            hero_badge: "Namangan tumani, Qumqo'rg'on | №1 Xalqaro Maktab",
+            hero_badge: "Namanganning №1 Xalqaro Maktabi",
             hero_title: 'Farzandingizga <span class="highlight">Xalqaro</span><br>Sifatli <span class="gold">Ta\'lim</span> Bering',
             hero_desc: "Al-Xorazmiy nomidagi iqtidorli bolalar xalqaro maktabi — Farg'ona vodiysida zamonaviy texnologiyalar, robototexnika, chuqurlashtirilgan ingliz tili va onlayn nazorat tizimi orqali farzandingizni dunyo darajasiga tayyorlaydi.",
             hero_btn_apply: "2026-2027 Qabulga Yozilish",
             hero_btn_about: "Maktab haqida",
             hero_btn_gallery: "Yutuqlar (Galereya)",
+            hero_partners_title: "Xalqaro ta'lim standartlari va hamkor tashkilotlarimiz",
             
             stat_students: "O'quvchi o'rni",
             stat_teachers: "Malakali pedagog",
@@ -307,12 +308,13 @@
             nav_admission: "Подать заявку",
             nav_contact: "Контакты",
             
-            hero_badge: "Наманганский район, Кумкурган | Школа №1",
+            hero_badge: "Школа №1 в Намангане",
             hero_title: 'Подарите ребенку <span class="highlight">Международное</span><br>Качественное <span class="gold">Образование</span>',
             hero_desc: "Международная специализированная школа имени Аль-Хорезми для одаренных детей — передовые технологии, робототехника, углубленный английский и онлайн-контроль успеваемости в Ферганской долине.",
             hero_btn_apply: "Подать заявку на 2026-2027",
             hero_btn_about: "О школе",
             hero_btn_gallery: "Наши достижения",
+            hero_partners_title: "Международные образовательные стандарты и партнеры",
             
             stat_students: "Ученических мест",
             stat_teachers: "Квалифицированных педагогов",
@@ -598,12 +600,13 @@
             nav_admission: "Apply Now",
             nav_contact: "Contact",
             
-            hero_badge: "Namangan, Qumqorgon | #1 International School",
+            hero_badge: "Namangan's #1 International School",
             hero_title: 'Give Your Child a <span class="highlight">World-Class</span><br>Quality <span class="gold">Education</span>',
             hero_desc: "Al-Khwarizmi International School for Gifted Children — modern technology, robotics, intensive English, and real-time online grading in the Fergana Valley.",
             hero_btn_apply: "Apply for 2026-2027",
             hero_btn_about: "About School",
             hero_btn_gallery: "Achievements Gallery",
+            hero_partners_title: "International Education Standards & Global Partners",
             
             stat_students: "Student Capacity",
             stat_teachers: "Qualified Educators",

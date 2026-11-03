@@ -332,26 +332,65 @@ html.liquid-nav-ready #header.island-condensed:not(:hover) .navbar .logo {
   }
 }
 
-@media (max-width: 440px) {
-  .nimbus-nav[data-island="true"] .nimbus-item {
-    padding: 0 5px;
+@media (max-width: 520px) {
+  html.liquid-nav-ready #header {
+    top: 8px !important;
+    padding: 0 4px !important;
+    
+    overflow: hidden !important;
   }
-  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] {
-    padding: 0 9px;
-    gap: 5px;
+  html.liquid-nav-ready .navbar {
+    padding: 4px 6px !important;
+    max-width: calc(100vw - 8px) !important;
+    overflow: hidden !important;
   }
-  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] .nimbus-label {
-    max-width: 82px;
+  html.liquid-nav-ready .navbar-inner {
+    gap: 4px !important;
+    max-width: 100% !important;
   }
-  .liquid-nav-root .nv-ico svg {
-    width: 15px;
-    height: 15px;
+  .navbar .logo-text {
+    display: none !important;
+  }
+  .navbar .logo-mark {
+    width: 28px !important;
+    height: 28px !important;
   }
   .navbar .logo {
-    padding-right: 5px !important;
+    padding-right: 3px !important;
+  }
+  .liquid-nav-root .nimbus-item {
+    height: 30px;
+    font-size: 11px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item {
+    padding: 0 3.5px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] {
+    padding: 0 7px;
+    gap: 3px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] .nimbus-label {
+    max-width: 54px;
+  }
+  .liquid-nav-root .nv-ico svg {
+    width: 13px;
+    height: 13px;
   }
   .navbar .nav-cta {
-    padding-left: 5px !important;
+    padding-left: 3px !important;
+    gap: 3px;
+  }
+  .navbar .ctrl-btn {
+    height: 28px;
+    min-width: 28px;
+    padding: 0 5px;
+    font-size: 10.5px;
+  }
+  .navbar #themeToggleBtn {
+    display: none !important;
+  }
+  .navbar #langLabel {
+    display: none !important;
   }
 }
 
