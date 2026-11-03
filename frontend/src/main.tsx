@@ -21,8 +21,6 @@ const SECTIONS: Section[] = [
   { id: "contact", key: "nav_contact", fallback: "Aloqa", icon: <Phone {...ico} />, fx: "wave" },
 ]
 
-const DOCK_QUERY = "(max-width: 900px)"
-
 function currentLang() {
   return document.documentElement.lang || localStorage.getItem("al_lang") || "uz"
 }
@@ -40,72 +38,23 @@ function translate(lang: string, key: string, fallback: string) {
   }
 }
 
-function currentTone(): "light" | "dark" {
-  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"
-}
-
 function headerOffset() {
   return (document.getElementById("header")?.offsetHeight ?? 80) + 8
 }
 
 function HeaderLiquidNav({ host }: { host: HTMLElement }) {
   const [lang, setLang] = React.useState(currentLang)
-  const [tone, setTone] = React.useState(currentTone)
   const [active, setActive] = React.useState(0)
-  const [dock, setDock] = React.useState(() => window.matchMedia(DOCK_QUERY).matches)
-  const [fitCompact, setFitCompact] = React.useState(false)
-  const [fitPass, setFitPass] = React.useState(0)
   const lockUntil = React.useRef(0)
 
-  /* follow site language + dark/light theme (both live on <html>) */
+  /* follow site language changes */
   React.useEffect(() => {
     const mo = new MutationObserver(() => {
       setLang(currentLang())
-      setTone(currentTone())
     })
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["lang", "data-theme"] })
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] })
     return () => mo.disconnect()
   }, [])
-
-  /* phones -> bottom dock (icons only) */
-  React.useEffect(() => {
-    const mq = window.matchMedia(DOCK_QUERY)
-    const on = () => setDock(mq.matches)
-    mq.addEventListener("change", on)
-    return () => mq.removeEventListener("change", on)
-  }, [])
-
-  /* desktop: show labels when they fit in the header row, otherwise icons only */
-  React.useEffect(() => {
-    let t = 0
-    const retry = () => {
-      window.clearTimeout(t)
-      t = window.setTimeout(() => {
-        setFitCompact(false)
-        setFitPass((n) => n + 1)
-      }, 120)
-    }
-    window.addEventListener("resize", retry)
-    return () => {
-      window.removeEventListener("resize", retry)
-      window.clearTimeout(t)
-    }
-  }, [])
-  React.useEffect(() => {
-    setFitCompact(false)
-    setFitPass((n) => n + 1)
-  }, [lang])
-  React.useLayoutEffect(() => {
-    if (dock || fitCompact) return
-    const row = host.closest(".navbar-inner") as HTMLElement | null
-    if (!row) return
-    const styles = getComputedStyle(row)
-    const gap = parseFloat(styles.columnGap || "0") || 0
-    const kids = Array.from(row.children).filter((el) => (el as HTMLElement).offsetWidth > 0) as HTMLElement[]
-    const used = kids.reduce((sum, el) => sum + el.offsetWidth, 0) + gap * Math.max(0, kids.length - 1) + 32
-    const avail = row.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight)
-    if (used > avail) setFitCompact(true)
-  }, [dock, fitCompact, fitPass, host])
 
   /* scroll-spy: highlight the section currently on screen */
   React.useEffect(() => {
@@ -145,8 +94,8 @@ function HeaderLiquidNav({ host }: { host: HTMLElement }) {
       items={items}
       active={active}
       onChange={(i) => go(i)}
-      tone={tone}
-      compact={dock || fitCompact}
+      tone="dark"
+      compact={true}
       sound={false}
     />
   )

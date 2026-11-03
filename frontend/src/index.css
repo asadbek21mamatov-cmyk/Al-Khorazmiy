@@ -1,6 +1,4 @@
-/* Tailwind v4 — WITHOUT preflight, so the existing static site's CSS is never reset.
-   Utilities are prefixed (`tw:`) and only scanned from the React sources, so classes
-   like `.container` / `.hidden` from index.html can never collide with Tailwind. */
+/* Tailwind v4 — WITHOUT preflight, so the existing static site's CSS is never reset. */
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
@@ -12,70 +10,231 @@ html.liquid-nav-ready .navbar .nav-links {
   display: none !important;
 }
 html.liquid-nav-ready .navbar .nav-phone {
-  display: none !important; /* phone stays visible in the top bar */
+  display: none !important;
+}
+html.liquid-nav-ready .navbar .hamburger {
+  display: none !important;
 }
 
-.liquid-nav-root {
-  flex: none;
-  display: flex;
-  justify-content: center;
-  min-width: 0;
+/* Header navbar styling to match the screenshot pixel-perfect */
+.navbar {
+  background: rgba(6, 14, 26, 0.94) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4) !important;
 }
+
+.navbar-inner {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 74px !important;
+}
+
+/* Left: Logo & text */
+.navbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  z-index: 5;
+}
+
+.navbar .logo-mark {
+  width: 44px;
+  height: 44px;
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(8, 147, 145, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.navbar .logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.navbar .logo-text {
+  line-height: 1.15;
+}
+
+.navbar .logo-text strong {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff !important;
+  letter-spacing: -0.01em;
+}
+
+.navbar .logo-text span {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65) !important;
+  letter-spacing: 0.02em;
+}
+
+/* Center: Liquid Glass Navbar (dead-center in the header) */
+.liquid-nav-root {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: auto;
+}
+
 .liquid-nav-root:empty {
   display: none;
 }
 
-/* site palette for the water + text */
+/* Liquid Navbar Pill Styling matching the screenshot */
 .liquid-nav-root .nimbus-nav {
-  --n-fg: #0b3b3c;
-  --n-fg-soft: rgba(11, 59, 60, 0.62);
-  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-}
-.liquid-nav-root .nimbus-nav[data-tone="dark"] {
-  --n-fg: #f1f7ff;
-  --n-fg-soft: rgba(241, 247, 255, 0.7);
-}
-.liquid-nav-root .nimbus-item {
-  height: 40px;
-  padding: 0 12px;
-  gap: 7px;
-  font-size: 13.5px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
-  padding: 0 12px;
-}
-.liquid-nav-root .nimbus-item[aria-current="page"] {
-  color: #089391;
-}
-.liquid-nav-root .nimbus-nav[data-tone="dark"] .nimbus-item[aria-current="page"] {
-  color: #5eead4;
+  --n-tint: rgba(10, 18, 40, 0.42);
+  --n-fg: #ffffff;
+  --n-fg-soft: rgba(241, 247, 255, 0.72);
+  --n-rim: rgba(255, 255, 255, 0.45);
+  background: rgba(10, 18, 40, 0.38);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  border-radius: 999px;
+  padding: 5px 6px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+              0 10px 28px -6px rgba(0, 20, 60, 0.65);
 }
 
-/* phones & small tablets: floating dock at the bottom of the screen */
-@media (max-width: 900px) {
-  .liquid-nav-root {
-    position: fixed;
-    left: 50%;
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    z-index: 8500;
-    max-width: calc(100vw - 16px);
+.liquid-nav-root .nimbus-item {
+  height: 40px;
+  padding: 0 13px !important;
+  border-radius: 999px;
+  color: rgba(241, 247, 255, 0.72);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.liquid-nav-root .nimbus-item:hover {
+  color: #ffffff !important;
+}
+
+/* Active item glowing electric cyan inside the water droplet */
+.liquid-nav-root .nimbus-item[aria-current="page"] {
+  color: #2dd4bf !important;
+}
+.liquid-nav-root .nimbus-item[aria-current="page"] .nv-ico svg {
+  color: #2dd4bf !important;
+  filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.65));
+}
+
+/* Right: Controls (Language & Theme toggle) */
+.navbar .nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+}
+
+.navbar .header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar .ctrl-btn {
+  height: 40px;
+  min-width: 40px;
+  padding: 0 13px;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.navbar .ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(45, 212, 191, 0.5) !important;
+  color: #2dd4bf !important;
+  transform: translateY(-1px);
+}
+
+.navbar #themeToggleBtn {
+  width: 40px;
+  padding: 0 !important;
+}
+
+.navbar #themeToggleBtn i {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.navbar .ctrl-btn .flag-img {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .navbar-inner {
+    padding: 0 16px;
+  }
+  .navbar .logo-text span {
+    display: none !important;
   }
   .liquid-nav-root .nimbus-item {
-    height: 42px;
-    padding: 0 11px;
-  }
-  .liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
-    padding: 0 11px;
-  }
-  html.liquid-nav-ready #backToTop {
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 10px !important;
+    height: 38px;
   }
 }
-@media (max-width: 380px) {
-  .liquid-nav-root .nimbus-nav[data-compact="true"] .nimbus-item {
+
+@media (max-width: 720px) {
+  .navbar .logo-text {
+    display: none !important;
+  }
+  .liquid-nav-root .nimbus-item {
+    padding: 0 8px !important;
+    height: 36px;
+  }
+  .navbar .ctrl-btn {
+    height: 36px;
+    min-width: 36px;
     padding: 0 9px;
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 460px) {
+  .liquid-nav-root .nimbus-item {
+    padding: 0 5px !important;
+  }
+  .liquid-nav-root .nv-ico svg {
+    width: 16px;
+    height: 16px;
+  }
+  .navbar #langLabel {
+    display: none;
   }
 }

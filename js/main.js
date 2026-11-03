@@ -187,8 +187,8 @@
     }
 
     // Initialize Theme
-    const savedTheme = localStorage.getItem('al_theme') || 'light';
-    applyTheme(savedTheme === 'dark');
+    const savedTheme = localStorage.getItem('al_theme') || 'dark';
+    applyTheme(savedTheme !== 'light');
 
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
