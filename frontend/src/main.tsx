@@ -39,10 +39,10 @@ function translate(lang: string, key: string, fallback: string) {
 }
 
 function headerOffset() {
-  return (document.getElementById("header")?.offsetHeight ?? 80) + 8
+  return (document.getElementById("header")?.offsetHeight ?? 80) + 18
 }
 
-function HeaderLiquidNav({ host }: { host: HTMLElement }) {
+function HeaderLiquidNav() {
   const [lang, setLang] = React.useState(currentLang)
   const [active, setActive] = React.useState(0)
   const lockUntil = React.useRef(0)
@@ -56,10 +56,14 @@ function HeaderLiquidNav({ host }: { host: HTMLElement }) {
     return () => mo.disconnect()
   }, [])
 
-  /* scroll-spy: highlight the section currently on screen */
+  /* scroll-spy + Dynamic Island condense state on scroll */
   React.useEffect(() => {
     const els = SECTIONS.map((s) => document.getElementById(s.id))
+    const headerEl = document.getElementById("header")
     const onScroll = () => {
+      if (headerEl) {
+        headerEl.classList.toggle("island-condensed", window.scrollY > 60)
+      }
       if (performance.now() < lockUntil.current) return
       const y = window.scrollY + headerOffset() + 40
       let cur = 0
@@ -95,7 +99,7 @@ function HeaderLiquidNav({ host }: { host: HTMLElement }) {
       active={active}
       onChange={(i) => go(i)}
       tone="dark"
-      compact={true}
+      dynamicIsland={true}
       sound={false}
     />
   )
@@ -105,7 +109,7 @@ function mount() {
   const host = document.getElementById("liquidNavRoot")
   if (!host || host.dataset.mounted) return
   host.dataset.mounted = "1"
-  createRoot(host).render(<HeaderLiquidNav host={host} />)
+  createRoot(host).render(<HeaderLiquidNav />)
   document.documentElement.classList.add("liquid-nav-ready")
 }
 

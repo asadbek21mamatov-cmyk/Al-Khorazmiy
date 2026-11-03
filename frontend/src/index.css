@@ -5,55 +5,116 @@
 @source "../components";
 @source "./";
 
-/* ---------- Liquid navbar host inside the site header ---------- */
-html.liquid-nav-ready .navbar .nav-links {
-  display: none !important;
-}
-html.liquid-nav-ready .navbar .nav-phone {
-  display: none !important;
-}
+/* ==========================================================
+   DYNAMIC ISLAND NAVBAR ARCHITECTURE (FULL HEADER CAPSULE)
+   ========================================================== */
+html.liquid-nav-ready .header-topbar,
+html.liquid-nav-ready .navbar .nav-links,
+html.liquid-nav-ready .navbar .nav-phone,
 html.liquid-nav-ready .navbar .hamburger {
   display: none !important;
 }
 
-/* Header navbar styling to match the screenshot pixel-perfect */
-.navbar {
-  background: rgba(6, 14, 26, 0.94) !important;
-  backdrop-filter: blur(24px) saturate(1.2) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4) !important;
-}
-
-.navbar-inner {
-  position: relative !important;
+/* Outer fixed wrapper: transparent, centers the floating Dynamic Island */
+html.liquid-nav-ready #header {
+  position: fixed !important;
+  top: 14px !important;
+  left: 0 !important;
+  right: 0 !important;
   display: flex !important;
+  justify-content: center !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  height: 74px !important;
+  padding: 0 12px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  z-index: 9000 !important;
+  transition: top 0.38s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-/* Left: Logo & text */
+html.liquid-nav-ready #header.island-condensed {
+  top: 10px !important;
+}
+
+/* The Dynamic Island Capsule itself */
+html.liquid-nav-ready .navbar {
+  pointer-events: auto !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  max-width: calc(100vw - 16px) !important;
+  padding: 6px 8px 6px 10px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, rgba(11, 20, 38, 0.9) 0%, rgba(5, 11, 22, 0.95) 100%) !important;
+  backdrop-filter: blur(28px) saturate(1.65) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.28),
+    inset 0 -1px 1px rgba(8, 147, 145, 0.18),
+    0 18px 42px -10px rgba(0, 0, 0, 0.72),
+    0 0 32px -6px rgba(45, 212, 191, 0.24) !important;
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s ease,
+    border-color 0.38s ease,
+    padding 0.38s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+html.liquid-nav-ready .navbar:hover {
+  border-color: rgba(45, 212, 191, 0.32) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.36),
+    inset 0 -1px 1px rgba(45, 212, 191, 0.28),
+    0 22px 48px -10px rgba(0, 0, 0, 0.78),
+    0 0 38px -4px rgba(45, 212, 191, 0.35) !important;
+}
+
+/* Inner flex row inside the Dynamic Island */
+html.liquid-nav-ready .navbar-inner {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 10px !important;
+}
+
+/* 1. Left Pod: Brand Emblem + Dynamic Collapsible Title */
 .navbar .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-decoration: none;
   z-index: 5;
+  padding-right: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transition: padding 0.36s cubic-bezier(0.22, 1, 0.36, 1), gap 0.36s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .navbar .logo-mark {
-  width: 44px;
-  height: 44px;
+  width: 40px !important;
+  height: 40px !important;
   background: #ffffff !important;
-  border-radius: 14px !important;
+  border-radius: 50% !important;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(8, 147, 145, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 18px rgba(45, 212, 191, 0.45) !important;
+  border: 1.5px solid rgba(45, 212, 191, 0.4);
   flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navbar .logo:hover .logo-mark {
+  transform: scale(1.06) rotate(-3deg);
 }
 
 .navbar .logo-mark img {
@@ -64,13 +125,32 @@ html.liquid-nav-ready .navbar .hamburger {
 }
 
 .navbar .logo-text {
-  line-height: 1.15;
+  line-height: 1.12;
+  max-width: 155px;
+  opacity: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    max-width 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease,
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* When scrolling down, brand text tucks into the Dynamic Island (and re-expands on island hover!) */
+html.liquid-nav-ready #header.island-condensed:not(:hover) .navbar .logo-text {
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(-6px);
+}
+html.liquid-nav-ready #header.island-condensed:not(:hover) .navbar .logo {
+  gap: 0;
+  padding-right: 8px;
 }
 
 .navbar .logo-text strong {
   display: block;
-  font-family: 'Outfit', sans-serif;
-  font-size: 19px;
+  font-family: "Outfit", sans-serif;
+  font-size: 16.5px;
   font-weight: 800;
   color: #ffffff !important;
   letter-spacing: -0.01em;
@@ -78,19 +158,16 @@ html.liquid-nav-ready .navbar .hamburger {
 
 .navbar .logo-text span {
   display: block;
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.65) !important;
+  color: rgba(255, 255, 255, 0.62) !important;
   letter-spacing: 0.02em;
 }
 
-/* Center: Liquid Glass Navbar (dead-center in the header) */
+/* 2. Center Pod: Liquid Glass Navbar with Dynamic Island item expansion */
 .liquid-nav-root {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
@@ -101,28 +178,29 @@ html.liquid-nav-ready .navbar .hamburger {
   display: none;
 }
 
-/* Liquid Navbar Pill Styling matching the screenshot */
 .liquid-nav-root .nimbus-nav {
-  --n-tint: rgba(10, 18, 40, 0.42);
+  --n-tint: rgba(14, 25, 52, 0.52);
   --n-fg: #ffffff;
   --n-fg-soft: rgba(241, 247, 255, 0.72);
-  --n-rim: rgba(255, 255, 255, 0.45);
-  background: rgba(10, 18, 40, 0.38);
-  backdrop-filter: blur(14px) saturate(1.25);
-  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  --n-rim: rgba(255, 255, 255, 0.42);
+  background: rgba(12, 22, 44, 0.48);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
   border-radius: 999px;
-  padding: 5px 6px;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55),
-              inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-              0 10px 28px -6px rgba(0, 20, 60, 0.65);
+  padding: 4px 5px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.48),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 8px 24px -6px rgba(0, 20, 60, 0.55);
 }
 
 .liquid-nav-root .nimbus-item {
-  height: 40px;
-  padding: 0 13px !important;
+  height: 38px;
   border-radius: 999px;
-  color: rgba(241, 247, 255, 0.72);
-  transition: color 0.2s ease, transform 0.2s ease;
+  color: rgba(241, 247, 255, 0.74);
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
 }
 
 .liquid-nav-root .nimbus-item:hover {
@@ -131,110 +209,148 @@ html.liquid-nav-ready .navbar .hamburger {
 
 /* Active item glowing electric cyan inside the water droplet */
 .liquid-nav-root .nimbus-item[aria-current="page"] {
-  color: #2dd4bf !important;
+  color: #5eead4 !important;
+  text-shadow: 0 0 12px rgba(45, 212, 191, 0.45);
 }
 .liquid-nav-root .nimbus-item[aria-current="page"] .nv-ico svg {
   color: #2dd4bf !important;
-  filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.65));
+  filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.7));
 }
 
-/* Right: Controls (Language & Theme toggle) */
+/* 3. Right Pod: Language & Theme Pill Controls inside the Dynamic Island */
 .navbar .nav-cta {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   z-index: 5;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .navbar .header-controls {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .navbar .ctrl-btn {
-  height: 40px;
-  min-width: 40px;
-  padding: 0 13px;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 12px !important;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 999px !important;
   color: #ffffff !important;
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 12px rgba(0, 0, 0, 0.22);
+  transition: all 0.22s ease;
 }
 
 .navbar .ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(45, 212, 191, 0.5) !important;
-  color: #2dd4bf !important;
+  background: rgba(45, 212, 191, 0.15) !important;
+  border-color: rgba(45, 212, 191, 0.55) !important;
+  color: #5eead4 !important;
   transform: translateY(-1px);
 }
 
 .navbar #themeToggleBtn {
-  width: 40px;
+  width: 38px;
   padding: 0 !important;
 }
 
 .navbar #themeToggleBtn i {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .navbar .ctrl-btn .flag-img {
-  width: 20px;
-  height: 14px;
+  width: 19px;
+  height: 13px;
   border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
-/* Responsive adjustments */
+/* Responsive scaling for tablets & mobile phones */
 @media (max-width: 960px) {
-  .navbar-inner {
-    padding: 0 16px;
+  .navbar .logo-text {
+    max-width: 0 !important;
+    opacity: 0 !important;
   }
-  .navbar .logo-text span {
-    display: none !important;
-  }
-  .liquid-nav-root .nimbus-item {
-    padding: 0 10px !important;
-    height: 38px;
+  .navbar .logo {
+    gap: 0 !important;
+    padding-right: 8px !important;
   }
 }
 
-@media (max-width: 720px) {
-  .navbar .logo-text {
-    display: none !important;
+@media (max-width: 680px) {
+  html.liquid-nav-ready #header {
+    top: 10px !important;
+    padding: 0 6px !important;
+  }
+  html.liquid-nav-ready .navbar {
+    padding: 5px 6px !important;
+  }
+  html.liquid-nav-ready .navbar-inner {
+    gap: 6px !important;
+  }
+  .navbar .logo-mark {
+    width: 34px !important;
+    height: 34px !important;
   }
   .liquid-nav-root .nimbus-item {
-    padding: 0 8px !important;
-    height: 36px;
+    height: 34px;
+    font-size: 12px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item {
+    padding: 0 8px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] {
+    padding: 0 11px;
+    gap: 6px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] .nimbus-label {
+    max-width: 105px;
   }
   .navbar .ctrl-btn {
-    height: 36px;
-    min-width: 36px;
+    height: 34px;
+    min-width: 34px;
     padding: 0 9px;
-    font-size: 12.5px;
+    font-size: 12px;
   }
-}
-
-@media (max-width: 460px) {
-  .liquid-nav-root .nimbus-item {
-    padding: 0 5px !important;
-  }
-  .liquid-nav-root .nv-ico svg {
-    width: 16px;
-    height: 16px;
+  .navbar #themeToggleBtn {
+    width: 34px;
   }
   .navbar #langLabel {
     display: none;
+  }
+}
+
+@media (max-width: 440px) {
+  .nimbus-nav[data-island="true"] .nimbus-item {
+    padding: 0 5px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] {
+    padding: 0 9px;
+    gap: 5px;
+  }
+  .nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] .nimbus-label {
+    max-width: 82px;
+  }
+  .liquid-nav-root .nv-ico svg {
+    width: 15px;
+    height: 15px;
+  }
+  .navbar .logo {
+    padding-right: 5px !important;
+  }
+  .navbar .nav-cta {
+    padding-left: 5px !important;
   }
 }

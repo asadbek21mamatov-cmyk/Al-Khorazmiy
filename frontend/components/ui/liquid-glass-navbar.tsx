@@ -1,7 +1,7 @@
 "use client"
 
 /**
- * Nimbus UI · Liquid Navbar — "Waterline"
+ * Nimbus UI · Liquid Navbar — "Waterline" (Dynamic Island Edition)
  * A pill of water. The active drop stretches toward the item you pick, splits into
  * droplets on long jumps and merges back with a ripple. The cursor lifts a meniscus,
  * every tap sends a wave along the pill, and each icon plays its own little scene.
@@ -31,6 +31,8 @@ export type LiquidNavbarProps = {
   tone?: "light" | "dark"
   /** icons only */
   compact?: boolean
+  /** Dynamic Island mode: only active and hovered items smoothly expand their text label */
+  dynamicIsland?: boolean
   /** soft synthesized "plip" on tap (no audio files) */
   sound?: boolean
   className?: string
@@ -109,7 +111,12 @@ const NIMBUS_CSS = `
 @keyframes nvWave{0%{transform:none}20%{transform:rotate(-15deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(4deg)}100%{transform:translateY(-1px) scale(1.08)}}
 .nimbus-nav[data-compact="true"] .nimbus-item{padding:0 13px}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (max-width:520px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+.nimbus-nav[data-island="true"] .nimbus-item{padding:0 12px;gap:0;transition:color .25s,padding .36s cubic-bezier(.22,1,.36,1),gap .36s cubic-bezier(.22,1,.36,1)}
+.nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"]{padding:0 16px;gap:8px}
+.nimbus-nav[data-island="true"] .nimbus-label{display:inline-block;max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transform:translateX(-5px) scale(.92);
+  transition:max-width .38s cubic-bezier(.22,1,.36,1),opacity .24s ease,transform .36s cubic-bezier(.22,1,.36,1)}
+.nimbus-nav[data-island="true"] .nimbus-item[data-expanded="true"] .nimbus-label{max-width:150px;opacity:1;transform:translateX(0) scale(1)}
+@media (max-width:520px){.nimbus-nav:not([data-compact="false"]):not([data-island="true"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]):not([data-island="true"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
 `
 
@@ -178,6 +185,7 @@ function makeState() {
     moving: false,
     split: false,
     ready: false,
+    layoutUntil: 0,
     w: 0,
     h: 0,
     visible: true,
@@ -231,12 +239,16 @@ export function LiquidNavbar({
   onChange,
   tone = "light",
   compact,
+  dynamicIsland = false,
   sound = false,
   className,
   style,
 }: LiquidNavbarProps) {
   const [inner, setInner] = React.useState(defaultActive)
+  const [hovered, setHovered] = React.useState<number | null>(null)
   const current = active ?? inner
+  const currentRef = React.useRef(current)
+  currentRef.current = current
   const navRef = React.useRef<HTMLElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const dropRef = React.useRef<HTMLSpanElement>(null)
@@ -250,6 +262,43 @@ export function LiquidNavbar({
   const dark = tone === "dark" ? 1 : 0
   const darkRef = React.useRef(dark)
   darkRef.current = dark
+
+  /* ---- live geometry sync (tracks Dynamic Island label transitions at 60fps) ---- */
+  const syncGeometry = React.useCallback((triggerMove: boolean) => {
+    const nav = navRef.current
+    const el = itemRefs.current[currentRef.current]
+    if (!nav || !el) return
+    const s = st.current
+    s.w = nav.offsetWidth
+    s.h = nav.offsetHeight
+    const T = s.t
+    T.r = el.offsetHeight / 2
+    T.q = Math.max(0, el.offsetWidth / 2 - T.r)
+    T.cy = PAD + el.offsetTop + el.offsetHeight / 2
+    const nx = PAD + el.offsetLeft + el.offsetWidth / 2
+    if (!s.ready) {
+      s.a.x = s.b.x = nx
+      s.q = T.q
+      s.ready = true
+    } else if (triggerMove && Math.abs(nx - T.x) > 0.5) {
+      s.lead = Math.abs(nx - s.a.x) <= Math.abs(nx - s.b.x) ? 0 : 1
+      s.lagFrom = performance.now() + 70
+      s.moving = true
+      s.split = false
+    }
+    T.x = nx
+    const cv = canvasRef.current
+    if (cv) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const W = s.w + PAD * 2, Hh = s.h + PAD * 2
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hh * dpr)) {
+        cv.width = Math.round(W * dpr)
+        cv.height = Math.round(Hh * dpr)
+        cv.style.width = `${W}px`
+        cv.style.height = `${Hh}px`
+      }
+    }
+  }, [])
 
   /* ---- drawing ---- */
   const draw = React.useCallback(() => {
@@ -294,9 +343,12 @@ export function LiquidNavbar({
   /* ---- physics ---- */
   const step = React.useCallback((dt: number, now: number) => {
     const s = st.current
+    if (now < s.layoutUntil || s.moving) {
+      syncGeometry(false)
+    }
     const T = s.t
     s.time += dt
-    s.q += (T.q - s.q) * Math.min(1, dt * 12)
+    s.q += (T.q - s.q) * Math.min(1, dt * 14)
     const bodies = [s.a, s.b]
     let still = true
     if (s.reduce) {
@@ -359,7 +411,7 @@ export function LiquidNavbar({
     s.rips = s.rips.filter((p) => p.age < 2.4)
     const target = s.mouse.on ? 1 : 0
     s.mouse.s += (target - s.mouse.s) * Math.min(1, dt * 7)
-  }, [])
+  }, [syncGeometry])
 
   const loop = React.useCallback(() => {
     const s = st.current
@@ -370,7 +422,7 @@ export function LiquidNavbar({
       s.last = now
       step(dt, now)
       draw()
-      const busy = s.moving || s.rips.length || s.sats.length || s.mouse.s > 0.01
+      const busy = s.moving || now < s.layoutUntil || s.rips.length || s.sats.length || s.mouse.s > 0.01
       // ambient water keeps moving while visible; reduced-motion only animates on change
       if (s.visible && (!s.reduce || busy)) s.raf = requestAnimationFrame(tick)
       else s.raf = 0
@@ -380,41 +432,10 @@ export function LiquidNavbar({
 
   /* ---- layout ---- */
   const measure = React.useCallback(() => {
-    const nav = navRef.current
-    const el = itemRefs.current[current]
-    if (!nav || !el) return
-    const s = st.current
-    s.w = nav.offsetWidth
-    s.h = nav.offsetHeight
-    const T = s.t
-    T.r = el.offsetHeight / 2
-    T.q = Math.max(0, el.offsetWidth / 2 - T.r)
-    T.cy = PAD + el.offsetTop + el.offsetHeight / 2
-    const nx = PAD + el.offsetLeft + el.offsetWidth / 2
-    if (!s.ready) {
-      s.a.x = s.b.x = nx
-      s.q = T.q
-      s.ready = true
-    } else if (Math.abs(nx - T.x) > 0.5) {
-      s.lead = Math.abs(nx - s.a.x) <= Math.abs(nx - s.b.x) ? 0 : 1
-      s.lagFrom = performance.now() + 70
-      s.moving = true
-      s.split = false
-    }
-    T.x = nx
-    const cv = canvasRef.current
-    if (cv) {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const W = s.w + PAD * 2, Hh = s.h + PAD * 2
-      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hh * dpr)) {
-        cv.width = Math.round(W * dpr)
-        cv.height = Math.round(Hh * dpr)
-        cv.style.width = `${W}px`
-        cv.style.height = `${Hh}px`
-      }
-    }
+    st.current.layoutUntil = performance.now() + 450
+    syncGeometry(true)
     loop()
-  }, [current, loop])
+  }, [syncGeometry, loop])
 
   React.useEffect(() => {
     setRefract(supportsRefraction())
@@ -438,18 +459,19 @@ export function LiquidNavbar({
     }
   }, [loop])
 
-  React.useLayoutEffect(() => { measure() }, [measure, items.length, compact])
-  const measureRef = React.useRef(measure)
-  measureRef.current = measure
+  React.useLayoutEffect(() => { measure() }, [measure, current, hovered, items.length, compact, dynamicIsland])
+  const syncRef = React.useRef(syncGeometry)
+  syncRef.current = syncGeometry
   React.useEffect(() => {
-    let lastW = -1
     const ro = new ResizeObserver(() => {
-      const w = navRef.current?.offsetWidth ?? 0
-      if (w !== lastW) { lastW = w; st.current.ready = false; measureRef.current() }
+      st.current.layoutUntil = performance.now() + 260
+      syncRef.current(false)
+      loop()
     })
     if (navRef.current) ro.observe(navRef.current)
+    itemRefs.current.forEach((el) => { if (el) ro.observe(el) })
     return () => ro.disconnect()
-  }, [])
+  }, [loop, items.length])
   React.useEffect(() => { loop() }, [tone, loop])
 
   /* ---- interaction ---- */
@@ -493,6 +515,9 @@ export function LiquidNavbar({
     const kind = items[i]?.fx ?? (items[i]?.icon ? "pop" : "none")
     setFx((f) => ({ i, n: f.n + 1 }))
     plip()
+    st.current.layoutUntil = performance.now() + 480
+    st.current.moving = true
+    st.current.split = false
     const c = iconCenter(i)
     if (c && kind === "drop") setTimeout(() => ripple(c.x, st.current.t.cy, 1.4), 430)
     if (c && kind === "plane") ripple(c.x, c.y, 0.6)
@@ -500,6 +525,7 @@ export function LiquidNavbar({
       if (active === undefined) setInner(i)
       onChange?.(i, items[i])
     }
+    loop()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -526,12 +552,18 @@ export function LiquidNavbar({
       className={["nimbus-nav", className].filter(Boolean).join(" ")}
       data-tone={tone}
       data-gl={gl}
-      data-compact={compact === undefined ? undefined : String(compact)}
+      data-compact={dynamicIsland ? undefined : compact === undefined ? undefined : String(compact)}
+      data-island={dynamicIsland ? "true" : undefined}
       data-refract={refract ? "on" : "off"}
       aria-label="Main"
       onKeyDown={onKeyDown}
       onPointerMove={onMove}
-      onPointerLeave={() => { st.current.mouse.on = false; loop() }}
+      onPointerLeave={() => {
+        st.current.mouse.on = false
+        setHovered(null)
+        st.current.layoutUntil = performance.now() + 450
+        loop()
+      }}
       onPointerDown={(e) => { const p = local(e.clientX, e.clientY); ripple(p.x, p.y, 0.8) }}
       style={style}
     >
@@ -549,10 +581,29 @@ export function LiquidNavbar({
       {items.map((it, i) => {
         const kind = it.fx ?? "pop"
         const playing = fx.i === i && kind !== "none"
+        const expanded = dynamicIsland ? (i === current || i === hovered) : !compact
         const props = {
           ref: (el: HTMLElement | null) => { itemRefs.current[i] = el },
           className: "nimbus-item",
           "aria-current": i === current ? ("page" as const) : undefined,
+          "data-expanded": expanded ? "true" : "false",
+          onPointerEnter: (e: React.PointerEvent) => {
+            if (e.pointerType === "mouse") {
+              setHovered(i)
+              st.current.layoutUntil = performance.now() + 450
+              loop()
+            }
+          },
+          onFocus: () => {
+            setHovered(i)
+            st.current.layoutUntil = performance.now() + 450
+            loop()
+          },
+          onBlur: () => {
+            setHovered((h) => (h === i ? null : h))
+            st.current.layoutUntil = performance.now() + 450
+            loop()
+          },
           onClick: () => select(i),
         }
         const content = (
