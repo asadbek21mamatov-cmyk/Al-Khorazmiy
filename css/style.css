@@ -1678,122 +1678,112 @@
     flex-shrink: 0;
 }
 
-/* Bottom Partners / Standard Logos Strip */
+/* Bottom Social Media Strip */
 .hero-bottom-strip {
-    max-width: 1024px;
-    margin: 80px auto 0;
+    max-width: 1040px;
+    margin: 64px auto 0;
     text-align: center;
 }
-.hero-partners-title {
+.hero-socials-title, .hero-partners-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
     text-align: center;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
+    margin-bottom: 18px;
 }
-.hero-partners-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-top: 24px;
-    align-items: center;
-    justify-items: center;
-}
-.hero-partner-logo-item {
-    display: inline-flex;
+.hero-socials-grid {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    width: 130px;
-    height: 38px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 9999px;
-    opacity: 0.78;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    gap: 12px;
 }
-.hero-partner-logo-item:hover {
-    opacity: 1;
-    transform: translateY(-2px);
+.hero-social-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: rgba(255, 255, 255, 0.92);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-social-pill i {
+    font-size: 15px;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+.hero-social-pill:hover {
+    transform: translateY(-3px);
+    color: #ffffff;
+}
+.hero-social-pill:hover i {
+    transform: scale(1.15);
 }
 
-@media (max-width: 900px) {
-    .hero-partners-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
+/* Platform specific branding glows on hover */
+.hero-social-pill.tg:hover {
+    background: rgba(34, 158, 217, 0.22);
+    border-color: rgba(34, 158, 217, 0.7);
+    box-shadow: 0 8px 24px rgba(34, 158, 217, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
+.hero-social-pill.tg i { color: #38bdf8; }
+
+.hero-social-pill.insta:hover {
+    background: rgba(225, 48, 108, 0.22);
+    border-color: rgba(225, 48, 108, 0.7);
+    box-shadow: 0 8px 24px rgba(225, 48, 108, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.hero-social-pill.insta i { color: #fb7185; }
+
+.hero-social-pill.yt:hover {
+    background: rgba(255, 0, 0, 0.22);
+    border-color: rgba(255, 0, 0, 0.7);
+    box-shadow: 0 8px 24px rgba(255, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.hero-social-pill.yt i { color: #f87171; }
+
+.hero-social-pill.fb:hover {
+    background: rgba(24, 119, 242, 0.22);
+    border-color: rgba(24, 119, 242, 0.7);
+    box-shadow: 0 8px 24px rgba(24, 119, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.hero-social-pill.fb i { color: #60a5fa; }
+
+.hero-social-pill.phone:hover {
+    background: rgba(34, 197, 94, 0.22);
+    border-color: rgba(34, 197, 94, 0.7);
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.hero-social-pill.phone i { color: #4ade80; }
 
 @media (max-width: 640px) {
-    .hero-centered-shell {
-        padding: 92px 14px 36px;
-    }
-    .hero-glass-badge {
-        max-width: calc(100vw - 28px);
-        gap: 6px;
-        padding: 5px 10px;
-        border-radius: 9999px;
-        white-space: nowrap;
-    }
-    .hero-badge-pill {
-        white-space: nowrap;
-        font-size: 10.5px;
-        padding: 2px 6px;
-    }
-    .hero-badge-text {
-        font-size: 11.5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .hero-title {
-        font-size: clamp(26px, 7vw, 44px);
-        line-height: 1.12;
-        letter-spacing: -0.02em;
-    }
-    .hero-desc {
-        font-size: 14px;
-        line-height: 1.55;
-        margin-top: 16px;
-        padding: 0 4px;
-    }
-    .hero-actions {
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-        margin-top: 24px;
-    }
-    .hero-btn-primary, .hero-btn-secondary {
-        width: 100%;
-        max-width: 300px;
-        justify-content: center;
-        padding: 11px 18px;
-        font-size: 13.5px;
-    }
     .hero-bottom-strip {
-        margin-top: 40px;
+        margin-top: 36px;
     }
-    .hero-partners-title {
+    .hero-socials-title, .hero-partners-title {
         font-size: 12px;
+        margin-bottom: 12px;
         padding: 0 8px;
     }
-    .hero-partners-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 14px;
+    .hero-socials-grid {
+        gap: 8px;
     }
-    .hero-partner-logo-item {
-        width: 86px;
-        height: 26px;
+    .hero-social-pill {
+        padding: 8px 13px;
+        font-size: 12px;
+        gap: 6px;
     }
-}
-
-@media (max-width: 400px) {
-    .hero-partners-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .hero-social-pill i {
+        font-size: 13.5px;
     }
 }
-
-

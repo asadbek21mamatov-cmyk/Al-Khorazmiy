@@ -22,7 +22,8 @@
             hero_btn_apply: "2026-2027 Qabulga Yozilish",
             hero_btn_about: "Maktab haqida",
             hero_btn_gallery: "Yutuqlar (Galereya)",
-            hero_partners_title: "Xalqaro ta'lim standartlari va hamkor tashkilotlarimiz",
+            hero_socials_title: "Bizni ijtimoiy tarmoqlarda kuzating",
+            hero_partners_title: "Bizni ijtimoiy tarmoqlarda kuzating",
             
             stat_students: "O'quvchi o'rni",
             stat_teachers: "Malakali pedagog",
@@ -314,7 +315,8 @@
             hero_btn_apply: "Подать заявку на 2026-2027",
             hero_btn_about: "О школе",
             hero_btn_gallery: "Наши достижения",
-            hero_partners_title: "Международные образовательные стандарты и партнеры",
+            hero_socials_title: "Мы в социальных сетях",
+            hero_partners_title: "Мы в социальных сетях",
             
             stat_students: "Ученических мест",
             stat_teachers: "Квалифицированных педагогов",
@@ -606,7 +608,8 @@
             hero_btn_apply: "Apply for 2026-2027",
             hero_btn_about: "About School",
             hero_btn_gallery: "Achievements Gallery",
-            hero_partners_title: "International Education Standards & Global Partners",
+            hero_socials_title: "Follow us on social media",
+            hero_partners_title: "Follow us on social media",
             
             stat_students: "Student Capacity",
             stat_teachers: "Qualified Educators",
