@@ -37,7 +37,7 @@ export interface ResponsiveHeroBannerProps {
 
 const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
     logoUrl = "/logo.webp",
-    backgroundImageUrl = "/assets/hero/hero_bg.jpg",
+    backgroundImageUrl = "/assets/hero/school_angle.webp",
     navLinks = [
         { label: "Bosh sahifa", href: "#hero", isActive: true },
         { label: "Maktab haqida", href: "#about" },

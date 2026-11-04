@@ -683,38 +683,43 @@
         .animate-fade-slide-in-4 { animation: fadeSlideIn 0.85s 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
         #hero {
-            width: 100%;
-            min-height: 100vh;
-            position: relative;
-            isolation: isolate;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            background: #070c18;
-        }
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            z-index: -2;
-        }
-        .hero-bg img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center 28%;
-            opacity: 0.42;
-            filter: saturate(1.1) contrast(1.05);
-        }
-        .hero-bg::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 50% 24%, rgba(20, 184, 166, 0.22) 0%, transparent 58%),
-                linear-gradient(180deg, rgba(6, 11, 22, 0.72) 0%, rgba(6, 11, 22, 0.62) 48%, rgba(6, 11, 22, 0.92) 100%);
-        }
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: #060b18;
+}
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+}
+.hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 36%;
+    opacity: 0.88;
+    filter: brightness(0.85) contrast(1.08) saturate(1.05);
+    transform: scale(1.02);
+    transition: transform 8s ease-out;
+}
+#hero:hover .hero-bg img {
+    transform: scale(1.04);
+}
+.hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 50% 48%, rgba(6, 11, 24, 0.42) 0%, rgba(6, 11, 24, 0.75) 70%, rgba(6, 11, 24, 0.95) 100%),
+        linear-gradient(180deg, rgba(6, 11, 24, 0.72) 0%, rgba(6, 11, 24, 0.3) 38%, rgba(6, 11, 24, 0.6) 72%, rgba(6, 11, 24, 0.96) 100%);
+}
         .hero-ring-overlay {
             pointer-events: none;
             position: absolute;
