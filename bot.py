@@ -834,12 +834,17 @@ CORS(app)
 # Flask loglarini sokin qilish
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
-BLOCKED_EXTENSIONS = (".py", ".pyc", ".json", ".bat", ".bak", ".env", ".log", ".git")
+BLOCKED_EXTENSIONS = (".py", ".pyc", ".json", ".bat", ".bak", ".env", ".log", ".git", ".ts", ".tsx", ".md", ".toml")
+BLOCKED_PREFIXES = ("/_source", "/frontend", "/components", "/lib", "/scratch", "/.agents", "/__pycache__")
 
 @app.before_request
 def protect_sensitive_files():
     req_path = (request.path or "").lower()
-    if any(req_path.endswith(ext) for ext in BLOCKED_EXTENSIONS) or "/." in req_path:
+    if (
+        any(req_path.endswith(ext) for ext in BLOCKED_EXTENSIONS)
+        or any(req_path == p or req_path.startswith(p + "/") for p in BLOCKED_PREFIXES)
+        or "/." in req_path
+    ):
         abort(403)
 
 @app.route("/")

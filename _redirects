@@ -1,0 +1,16 @@
+/_source/*             /404.html  404!
+/js/*                  /404.html  404!
+/css/*                 /404.html  404!
+/frontend/*            /404.html  404!
+/components/*          /404.html  404!
+/lib/*                 /404.html  404!
+/scratch/*             /404.html  404!
+/.agents/*             /404.html  404!
+/__pycache__/*         /404.html  404!
+/bot.py                /404.html  404!
+/bot_data.json         /404.html  404!
+/start_bot.bat         /404.html  404!
+/components.json       /404.html  404!
+/tsconfig.json         /404.html  404!
+/skills-lock.json      /404.html  404!
+/README.md             /404.html  404!

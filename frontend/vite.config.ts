@@ -18,8 +18,9 @@ export default defineConfig({
     "process.env.NODE_ENV": JSON.stringify("production"),
   },
   build: {
-    outDir: path.resolve(root, "../assets/liquid-navbar"),
+    outDir: path.resolve(root, "../_source/liquid-navbar"),
     emptyOutDir: true,
+    sourcemap: false,
     lib: {
       entry: path.resolve(root, "src/main.tsx"),
       name: "AlKhorazmiyLiquidNav",
