@@ -1,7 +1,7 @@
 import "./index.css"
 import * as React from "react"
 import { createRoot } from "react-dom/client"
-import { Info, Images, Clapperboard, Newspaper, FilePenLine, Phone } from "lucide-react"
+import { Info, Images, Clapperboard, FilePenLine, Phone } from "lucide-react"
 import { LiquidNavbar, NimbusIcons, type LiquidNavItem, type NimbusFx } from "@/components/ui/liquid-glass-navbar"
 
 /* `I18N` is a top-level `const` declared by the static site's js/i18n.js */
@@ -16,7 +16,6 @@ const SECTIONS: Section[] = [
   { id: "about", key: "nav_about", fallback: "Maktab haqida", icon: <Info {...ico} />, fx: "spin" },
   { id: "gallery", key: "nav_gallery", fallback: "Galereya", icon: <Images {...ico} />, fx: "pop" },
   { id: "videos", key: "nav_videos", fallback: "Videolar", icon: <Clapperboard {...ico} />, fx: "plane" },
-  { id: "news", key: "nav_news", fallback: "Yangiliklar", icon: <Newspaper {...ico} />, fx: "wave" },
   { id: "admission", key: "nav_admission", fallback: "Ariza Qoldirish", icon: <FilePenLine {...ico} />, fx: "drop" },
   { id: "contact", key: "nav_contact", fallback: "Aloqa", icon: <Phone {...ico} />, fx: "wave" },
 ]
