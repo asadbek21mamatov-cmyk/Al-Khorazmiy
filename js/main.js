@@ -308,9 +308,7 @@
     }
 
     /* ==========================================================
-       6. APPLICATION FORM & SECURE BACKEND INTEGRATION
-       Applications are securely submitted via bot.py /api/apply
-       No Telegram tokens or private credentials exposed to client!
+       6. ADMISSION FORM SUBMISSION
        ========================================================== */
     function escapeHtml(text) {
         if (!text) return "";
@@ -440,8 +438,6 @@
                 const timeStr = now.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
                                 ' ' + now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
 
-                const SUPABASE_EDGE_APPLY = 'https://lzthytpezdadtobbampc.supabase.co/functions/v1/submit-application';
-                const SUPABASE_PUB_KEY = 'sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp';
                 const payloadObj = {
                     parent: parent,
                     child: child,
@@ -450,51 +446,20 @@
                     time: timeStr
                 };
 
-                let submittedOk = false;
                 try {
-                    const cloudResp = await fetch(SUPABASE_EDGE_APPLY, {
+                    const response = await fetch('/api/apply', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_PUB_KEY
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payloadObj)
                     });
-                    if (cloudResp.ok) {
-                        const resData = await cloudResp.json();
-                        submittedOk = Boolean(resData && resData.ok);
+                    if (response.ok) {
+                        const resData = await response.json();
                         if (resData && resData.botDeepLink) {
                             const modalBotLink = document.getElementById('modalBotLink');
                             if (modalBotLink) modalBotLink.href = resData.botDeepLink;
                         }
                     }
-                } catch (cloudErr) {
-                    console.warn('Cloud submit-application xatosi, lokal server sinab ko\'rilmoqda:', cloudErr);
-                }
-
-                // Fallback to local bot.py /api/apply only if cloud endpoint was unreachable
-                if (!submittedOk) {
-                    const isLocalFile = window.location.protocol === 'file:';
-                    const localApiUrl = isLocalFile || window.location.port !== '5000'
-                        ? 'http://localhost:5000/api/apply'
-                        : '/api/apply';
-                    try {
-                        const response = await fetch(localApiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payloadObj)
-                        });
-                        if (response.ok) {
-                            const resData = await response.json();
-                            if (resData.botDeepLink) {
-                                const modalBotLink = document.getElementById('modalBotLink');
-                                if (modalBotLink) modalBotLink.href = resData.botDeepLink;
-                            }
-                        }
-                    } catch (fetchErr) {
-                        console.warn('Lokal serverga ulanishda ogohlantirish:', fetchErr);
-                    }
-                }
+                } catch (_) {}
 
                 modal.classList.add('show');
                 form.reset();
@@ -834,14 +799,9 @@
 
 
     /* ==========================================================
-       10. SUPABASE CLOUD DYNAMIC CMS LOADER
-       Loads live Certificates, Campus Gallery & School News
-       using publishable key only (RLS-protected, non-blocking)
+       10. DYNAMIC MEDIA & NEWS LOADER
        ========================================================== */
-    (function initSupabaseCMS() {
-        const SB_URL = 'https://lzthytpezdadtobbampc.supabase.co';
-        const SB_PUB_KEY = 'sb_publishable_3Tgx9iGhPKp0U2ivkBDiyA_QOKqe8cp';
-
+    (function initDynamicContent() {
         function escapeAttr(val) {
             return escapeHtml(val).replace(/"/g, '&quot;');
         }
@@ -905,26 +865,26 @@
             }
         };
 
-        async function sbFetch(tablePath) {
-            const resp = await fetch(`${SB_URL}/rest/v1/${tablePath}`, {
-                headers: { 'apikey': SB_PUB_KEY }
-            });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return resp.json();
-        }
-
         async function loadDynamicContent() {
-            const [certsRes, galRes, newsRes] = await Promise.allSettled([
-                sbFetch('certificates?select=*&is_published=eq.true&order=sort_order.asc,id.desc'),
-                sbFetch('gallery_items?select=*&is_published=eq.true&order=sort_order.asc,id.desc'),
-                sbFetch('news_posts?select=*&is_published=eq.true&order=published_date.desc,id.desc')
-            ]);
+            let payload;
+            try {
+                const resp = await fetch('/api/content');
+                if (!resp.ok) return;
+                payload = await resp.json();
+            } catch (_) {
+                return;
+            }
+            if (!payload || typeof payload !== 'object') return;
+
+            const certsList = Array.isArray(payload.certificates) ? payload.certificates : [];
+            const galList = Array.isArray(payload.gallery) ? payload.gallery : [];
+            const newsList = Array.isArray(payload.news) ? payload.news : [];
 
             // 1. Certificates (#awardsTrack)
-            if (certsRes.status === 'fulfilled' && Array.isArray(certsRes.value) && certsRes.value.length > 0) {
+            if (certsList.length > 0) {
                 const awardsTrack = document.getElementById('awardsTrack');
                 if (awardsTrack) {
-                    awardsTrack.innerHTML = certsRes.value.map((row, idx) => {
+                    awardsTrack.innerHTML = certsList.map((row, idx) => {
                         const cat = escapeAttr(row.category || 'other');
                         const img = escapeAttr(row.image_url || '');
                         const title = escapeAttr(row.title || '');
@@ -948,10 +908,10 @@
             }
 
             // 2. Campus Gallery (#facTrack)
-            if (galRes.status === 'fulfilled' && Array.isArray(galRes.value) && galRes.value.length > 0) {
+            if (galList.length > 0) {
                 const facTrack = document.getElementById('facTrack');
                 if (facTrack) {
-                    facTrack.innerHTML = galRes.value.map((row, idx) => {
+                    facTrack.innerHTML = galList.map((row, idx) => {
                         const img = escapeAttr(row.image_url || '');
                         const title = escapeAttr(row.title || '');
                         const badge = escapeHtml(row.badge_text || '');
@@ -970,13 +930,13 @@
             }
 
             // 3. School News (#newsGrid)
-            if (newsRes.status === 'fulfilled' && Array.isArray(newsRes.value) && newsRes.value.length > 0) {
+            if (newsList.length > 0) {
                 const newsGrid = document.getElementById('newsGrid');
                 if (newsGrid) {
                     const lang = localStorage.getItem('al_lang') || 'uz';
                     const dict = (typeof I18N !== 'undefined' && I18N[lang]) ? I18N[lang] : {};
                     const btnText = escapeHtml(dict.news_btn_apply || 'Batafsil / Ariza');
-                    newsGrid.innerHTML = newsRes.value.map((post) => {
+                    newsGrid.innerHTML = newsList.map((post) => {
                         const img = escapeAttr(post.image_url || 'school_building.webp');
                         const cat = escapeHtml(post.category || 'Yangilik');
                         const title = escapeHtml(post.title || '');

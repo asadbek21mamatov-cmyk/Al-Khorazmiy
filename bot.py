@@ -943,6 +943,224 @@ def handle_web_application():
     })
 
 
+@app.route("/api/content", methods=["GET"])
+def handle_web_content():
+    try:
+        def fetch_table(path):
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/rest/v1/{path}",
+                headers={"apikey": SUPABASE_PUB_KEY}
+            )
+            with urllib.request.urlopen(req, timeout=5) as r:
+                return json.loads(r.read().decode("utf-8"))
+        certs = fetch_table("certificates?select=id,category,badge_text,title,image_url,sort_order&is_published=eq.true&order=sort_order.asc,id.desc")
+        gal = fetch_table("gallery_items?select=id,badge_text,icon_class,title,image_url,sort_order&is_published=eq.true&order=sort_order.asc,id.desc")
+        news = fetch_table("news_posts?select=id,category,published_date,title,summary,image_url&is_published=eq.true&order=published_date.desc,id.desc")
+        return jsonify({"certificates": certs, "gallery": gal, "news": news}), 200
+    except Exception as e:
+        logger.warning(f"Lokal /api/content xatosi: {e}")
+        return jsonify({"certificates": [], "gallery": [], "news": []}), 200
+
+
+@app.route("/api/admin", methods=["POST", "OPTIONS"])
+def handle_web_admin():
+    if request.method == "OPTIONS":
+        return jsonify({"ok": True}), 200
+
+    data = request.get_json(silent=True) or {}
+    action = data.get("action", "")
+
+    # 1. Login
+    if action == "login":
+        email = str(data.get("email", "")).strip()
+        password = str(data.get("password", ""))
+        if not email or not password:
+            return jsonify({"error": "Email va parolni kiriting."}), 400
+        try:
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/auth/v1/token?grant_type=password",
+                data=json.dumps({"email": email, "password": password}).encode("utf-8"),
+                headers={"Content-Type": "application/json", "apikey": SUPABASE_PUB_KEY},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=8) as r:
+                auth_res = json.loads(r.read().decode("utf-8"))
+                user = auth_res.get("user", {})
+                if user.get("app_metadata", {}).get("role") != "admin":
+                    return jsonify({"error": "Ushbu hisobda Administrator huquqi mavjud emas."}), 403
+                return jsonify({
+                    "ok": True,
+                    "access_token": auth_res.get("access_token"),
+                    "user": {"email": user.get("email")}
+                }), 200
+        except urllib.error.HTTPError as he:
+            return jsonify({"error": "Email yoki parol noto'g'ri! Qaytadan tekshiring."}), 401
+        except Exception as e:
+            return jsonify({"error": f"Server xatosi: {e}"}), 500
+
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+    if not token:
+        return jsonify({"error": "Avtorizatsiya muddati tugagan. Qaytadan tizimga kiring."}), 401
+
+    sb_headers = {
+        "apikey": SUPABASE_PUB_KEY,
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        user_req = urllib.request.Request(f"{SUPABASE_URL}/auth/v1/user", headers=sb_headers)
+        with urllib.request.urlopen(user_req, timeout=5) as ur:
+            u_data = json.loads(ur.read().decode("utf-8"))
+            if u_data.get("app_metadata", {}).get("role") != "admin":
+                return jsonify({"error": "Administrator huquqi talab qilinadi."}), 403
+    except Exception:
+        return jsonify({"error": "Avtorizatsiya muddati tugagan. Qaytadan tizimga kiring."}), 401
+
+    if action == "session":
+        return jsonify({"ok": True, "user": {"email": u_data.get("email")}}), 200
+
+    if action == "logout":
+        try:
+            l_req = urllib.request.Request(f"{SUPABASE_URL}/auth/v1/logout", headers=sb_headers, method="POST")
+            urllib.request.urlopen(l_req, timeout=5)
+        except Exception:
+            pass
+        return jsonify({"ok": True}), 200
+
+    if action == "password":
+        pwd = str(data.get("password", ""))
+        if len(pwd) < 8:
+            return jsonify({"error": "Parol kamida 8 ta belgidan iborat bo'lishi kerak."}), 400
+        try:
+            p_req = urllib.request.Request(
+                f"{SUPABASE_URL}/auth/v1/user",
+                data=json.dumps({"password": pwd}).encode("utf-8"),
+                headers=sb_headers,
+                method="PUT"
+            )
+            with urllib.request.urlopen(p_req, timeout=5) as pr:
+                return jsonify({"ok": True}), 200
+        except urllib.error.HTTPError as he:
+            err = json.loads(he.read().decode("utf-8"))
+            return jsonify({"error": err.get("message") or err.get("msg") or "Parol yangilanmadi"}), 400
+
+    list_order = {
+        "applications": "order=created_at.desc",
+        "certificates": "order=sort_order.asc,id.desc",
+        "gallery_items": "order=sort_order.asc,id.desc",
+        "news_posts": "order=published_date.desc,id.desc",
+        "bot_users": "order=registered_at.desc"
+    }
+
+    if action == "list":
+        res = data.get("resource", "")
+        if res not in list_order:
+            return jsonify({"error": "Noto'g'ri jadval"}), 400
+        try:
+            req = urllib.request.Request(f"{SUPABASE_URL}/rest/v1/{res}?select=*&{list_order[res]}", headers=sb_headers)
+            with urllib.request.urlopen(req, timeout=8) as r:
+                return jsonify({"ok": True, "data": json.loads(r.read().decode("utf-8"))}), 200
+        except Exception as e:
+            return jsonify({"error": f"Ma'lumotlarni yuklashda xatolik: {e}"}), 500
+
+    if action == "insert":
+        res = data.get("resource", "")
+        rec = data.get("record", {})
+        try:
+            ins_h = dict(sb_headers)
+            ins_h["Prefer"] = "return=minimal"
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/rest/v1/{res}",
+                data=json.dumps(rec).encode("utf-8"),
+                headers=ins_h,
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=8) as r:
+                return jsonify({"ok": True}), 200
+        except Exception as e:
+            return jsonify({"error": f"Qo'shishda xatolik: {e}"}), 400
+
+    if action == "update":
+        res = data.get("resource", "")
+        row_id = data.get("id")
+        patch = data.get("patch", {})
+        try:
+            up_h = dict(sb_headers)
+            up_h["Prefer"] = "return=minimal"
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/rest/v1/{res}?id=eq.{row_id}",
+                data=json.dumps(patch).encode("utf-8"),
+                headers=up_h,
+                method="PATCH"
+            )
+            with urllib.request.urlopen(req, timeout=8) as r:
+                return jsonify({"ok": True}), 200
+        except Exception as e:
+            return jsonify({"error": f"Yangilashda xatolik: {e}"}), 400
+
+    if action == "delete":
+        res = data.get("resource", "")
+        row_id = data.get("id")
+        try:
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/rest/v1/{res}?id=eq.{row_id}",
+                headers=sb_headers,
+                method="DELETE"
+            )
+            with urllib.request.urlopen(req, timeout=8) as r:
+                pass
+            img_url = data.get("imageUrl", "")
+            marker = "/storage/v1/object/public/school-media/"
+            if marker in img_url:
+                rel = img_url.split(marker)[1]
+                if rel:
+                    try:
+                        del_req = urllib.request.Request(
+                            f"{SUPABASE_URL}/storage/v1/object/school-media/{rel}",
+                            headers={"apikey": SUPABASE_PUB_KEY, "Authorization": f"Bearer {token}"},
+                            method="DELETE"
+                        )
+                        urllib.request.urlopen(del_req, timeout=5)
+                    except Exception:
+                        pass
+            return jsonify({"ok": True}), 200
+        except Exception as e:
+            return jsonify({"error": f"O'chirishda xatolik: {e}"}), 400
+
+    if action == "upload":
+        import base64
+        folder = data.get("folder", "certificates")
+        file_name = data.get("fileName", "image.jpg")
+        content_type = data.get("contentType", "image/jpeg")
+        b64_data = data.get("base64Data", "")
+        ext = re.sub(r"[^a-z0-9]", "", file_name.split(".")[-1].lower()) or "jpg"
+        base_name = re.sub(r"[^a-zA-Z0-9_-]", "_", os.path.splitext(file_name)[0])[:40] or "media"
+        file_path = f"{folder}/{int(time.time()*1000)}_{base_name}.{ext}"
+        binary = base64.b64decode(b64_data)
+        try:
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/storage/v1/object/school-media/{file_path}",
+                data=binary,
+                headers={
+                    "apikey": SUPABASE_PUB_KEY,
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": content_type,
+                    "cache-control": "31536000",
+                    "x-upsert": "false"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=12) as r:
+                pub_url = f"{SUPABASE_URL}/storage/v1/object/public/school-media/{file_path}"
+                return jsonify({"ok": True, "publicUrl": pub_url}), 200
+        except Exception as e:
+            return jsonify({"error": f"Yuklashda xatolik: {e}"}), 400
+
+    return jsonify({"error": "Noma'lum amal"}), 400
+
+
 def run_web_server():
     try:
         logger.info("Web API server http://127.0.0.1:5000 da ishga tushmoqda...")
