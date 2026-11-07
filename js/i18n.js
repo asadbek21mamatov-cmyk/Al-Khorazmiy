@@ -18,7 +18,7 @@
             
             hero_badge: "Namanganning №1 Xalqaro Maktabi",
             hero_title: 'Farzandingizga <span class="highlight">Xalqaro</span><br>Sifatli <span class="gold">Ta\'lim</span> Bering',
-            hero_desc: "Al-Xorazmiy nomidagi iqtidorli bolalar xalqaro maktabi — Farg'ona vodiysida zamonaviy texnologiyalar, robototexnika, chuqurlashtirilgan ingliz tili va onlayn nazorat tizimi orqali farzandingizni dunyo darajasiga tayyorlaydi.",
+            hero_desc: "Al-Xorazmiy nomidagi iqtidorli bolalar xalqaro maktabi — Namanganda zamonaviy texnologiyalar, robototexnika, chuqurlashtirilgan ingliz tili va onlayn nazorat tizimi orqali farzandingizni dunyo darajasiga tayyorlaydi.",
             hero_btn_apply: "2026-2027 Qabulga Yozilish",
             hero_btn_about: "Maktab haqida",
             hero_btn_gallery: "Yutuqlar (Galereya)",
@@ -41,8 +41,8 @@
             ticker_5: "Ota-onalar uchun onlayn baholash va nazorat tizimi",
             
             about_tag: "Biz haqimizda",
-            about_title: "Farg'ona vodiysining <span>ilg'or</span> iqtidorli bolalar maktabi",
-            about_desc: "Al-Xorazmiy nomidagi iqtidorli bolalar xalqaro maxsus maktabi — Namangan tumanidagi Qumqo'rg'on qishlog'ida tadbirkor Muhriddin Xojiakbarov tashabbusi bilan 12 milliard so'm investitsiya evaziga barpo etilgan. Farg'ona vodiysida birinchilardan bo'lib tashkil etilgan ushbu 450 o'rinli muassasada darslar bosqichma-bosqich ingliz tilida o'tiladi va ota-onalar uchun onlayn baholash tizimi yo'lga qo'yilgan.",
+            about_title: "Namanganning <span>ilg'or</span> iqtidorli bolalar maktabi",
+            about_desc: "Al-Xorazmiy nomidagi iqtidorli bolalar xalqaro maxsus maktabi — Namangan tumanidagi Qumqo'rg'on qishlog'ida tadbirkor Muhriddin Xojiakbarov tashabbusi bilan 12 milliard so'm investitsiya evaziga barpo etilgan. Ushbu 450 o'rinli zamonaviy muassasada darslar bosqichma-bosqich ingliz tilida o'tiladi va ota-onalar uchun onlayn baholash tizimi yo'lga qo'yilgan.",
             about_exp: "Yil tajriba",
             feat_1_title: "Xalqaro o'quv dasturi",
             feat_1_desc: "Cambridge va ilg'or pedagogik standartlar, ingliz tilida chuqurlashtirilgan ta'lim.",
@@ -311,7 +311,7 @@
             
             hero_badge: "Школа №1 в Намангане",
             hero_title: 'Подарите ребенку <span class="highlight">Международное</span><br>Качественное <span class="gold">Образование</span>',
-            hero_desc: "Международная специализированная школа имени Аль-Хорезми для одаренных детей — передовые технологии, робототехника, углубленный английский и онлайн-контроль успеваемости в Ферганской долине.",
+            hero_desc: "Международная специализированная школа имени Аль-Хорезми для одаренных детей — передовые технологии, робототехника, углубленный английский и онлайн-контроль успеваемости в Намангане.",
             hero_btn_apply: "Подать заявку на 2026-2027",
             hero_btn_about: "О школе",
             hero_btn_gallery: "Наши достижения",
@@ -604,7 +604,7 @@
             
             hero_badge: "Namangan's #1 International School",
             hero_title: 'Give Your Child a <span class="highlight">World-Class</span><br>Quality <span class="gold">Education</span>',
-            hero_desc: "Al-Khwarizmi International School for Gifted Children — modern technology, robotics, intensive English, and real-time online grading in the Fergana Valley.",
+            hero_desc: "Al-Khwarizmi International School for Gifted Children — modern technology, robotics, intensive English, and real-time online grading in Namangan.",
             hero_btn_apply: "Apply for 2026-2027",
             hero_btn_about: "About School",
             hero_btn_gallery: "Achievements Gallery",
@@ -627,7 +627,7 @@
             ticker_5: "Real-time online grade tracking platform for parents",
             
             about_tag: "About Us",
-            about_title: "Fergana Valley's <span>Premier</span> School for Gifted Children",
+            about_title: "Namangan's <span>Premier</span> School for Gifted Children",
             about_desc: "Al-Khwarizmi International Specialized School for Gifted Children was established in Qumqorgon village, Namangan by entrepreneur Mukhriddin Khojiakbarov with an investment of 12 billion UZS. Accommodating 450 students, classes are progressively conducted in English with an innovative real-time online parent portal.",
             about_exp: "Years Experience",
             feat_1_title: "International Curriculum",
